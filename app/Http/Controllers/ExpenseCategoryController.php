@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\ExpenseCategory;
+use App\Models\Account;
 use Illuminate\Http\Request;
 
 class ExpenseCategoryController extends Controller
 {
     public function index()
     {
-        $categories = ExpenseCategory::all();
+        $categories = ExpenseCategory::with('parent')->get();
         return view('expense_categories.index', compact('categories'));
     }
 
@@ -23,17 +24,24 @@ class ExpenseCategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:expense_categories,id',
         ]);
 
-        ExpenseCategory::create($request->all());
+        $category = ExpenseCategory::create($request->all());
+
+        // Create a related account under "Expense Account" category
+        $account = Account::create([
+            'parent_id' => 7,
+            'name' => $category->name,
+            'type' => 'expense',
+            'code' => 'EXP-' . strtoupper(str_replace(' ', '-', $category->name)),
+        ]);
+
+        // Associate the account with the category
+        $category->update(['account_id' => $account->id]);
 
         return redirect()->route('expense_categories.index')
-            ->with('success', 'Expense category created successfully.');
-    }
-
-    public function show(ExpenseCategory $expenseCategory)
-    {
-        return view('expense_categories.show', compact('expenseCategory'));
+            ->with('success', 'Expense category and related account created successfully.');
     }
 
     public function edit(ExpenseCategory $expenseCategory)
@@ -46,19 +54,35 @@ class ExpenseCategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:expense_categories,id',
         ]);
 
         $expenseCategory->update($request->all());
 
+        // Update the related account's name and code
+        $account = $expenseCategory->account;
+        if ($account) {
+            $account->update([
+                'name' => $expenseCategory->name,
+                'code' => 'EXP-' . strtoupper(str_replace(' ', '-', $expenseCategory->name)),
+            ]);
+        }
+
         return redirect()->route('expense_categories.index')
-            ->with('success', 'Expense category updated successfully.');
+            ->with('success', 'Expense category and related account updated successfully.');
     }
 
     public function destroy(ExpenseCategory $expenseCategory)
     {
+        // Delete the related account
+        $account = $expenseCategory->account;
+        if ($account) {
+            $account->delete();
+        }
+
         $expenseCategory->delete();
 
         return redirect()->route('expense_categories.index')
-            ->with('success', 'Expense category deleted successfully.');
+            ->with('success', 'Expense category and related account deleted successfully.');
     }
 }

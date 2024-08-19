@@ -13,8 +13,8 @@
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Parent ID</th>
                     <th>Name</th>
+                    <th>Parent</th>
                     <th>Type</th>
                     <th>Code</th>
                     <th>Opening Balance</th>
@@ -25,8 +25,8 @@
                 @foreach($accounts as $account)
                     <tr>
                         <td>{{ $account->id }}</td>
-                        <td>{{ $account->parent_id }}</td>
                         <td>{{ $account->name }}</td>
+                        <td>{{ $account->parent->name??'' }}</td>
                         <td>{{ ucfirst($account->type) }}</td>
                         <td>{{ $account->code }}</td>
                         <td>{{ number_format($account->opening_balance, 2) }}</td>

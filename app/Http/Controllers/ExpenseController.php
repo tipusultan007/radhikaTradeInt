@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\Account;
+use App\Models\JournalEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ExpenseController extends Controller
 {
@@ -13,7 +15,7 @@ class ExpenseController extends Controller
     {
         $categories = ExpenseCategory::all();
         $accounts = Account::all();
-        $expenses = Expense::with('expenseCategory', 'account')->get();
+        $expenses = Expense::with('expenseCategory', 'account', 'journalEntry')->get();
         return view('expenses.index', compact('expenses','accounts','categories'));
     }
 
@@ -34,7 +36,32 @@ class ExpenseController extends Controller
             'date' => 'required|date',
         ]);
 
-        Expense::create($request->all());
+        DB::transaction(function () use ($request) {
+            // Create Expense
+            $expense = Expense::create($request->all());
+
+            // Create Journal Entry
+            $journalEntry = new JournalEntry([
+                'description' => $request->description,
+                'type' => 'expense',
+                'date' => $request->date,
+            ]);
+            $expense->journalEntry()->save($journalEntry);
+
+            // Create Journal Entry Line Items
+            $journalEntry->lineItems()->createMany([
+                [
+                    'account_id' => $expense->account_id, // Credit account
+                    'credit' => $request->amount,
+                    'debit' => 0,
+                ],
+                [
+                    'account_id' => $expense->expenseCategory->account_id, // Debit account
+                    'debit' => $request->amount,
+                    'credit' => 0,
+                ],
+            ]);
+        });
 
         return redirect()->route('expenses.index')
             ->with('success', 'Expense recorded successfully.');
@@ -62,7 +89,34 @@ class ExpenseController extends Controller
             'date' => 'required|date',
         ]);
 
-        $expense->update($request->all());
+        DB::transaction(function () use ($request, $expense) {
+            // Update Expense
+            $expense->update($request->all());
+
+            // Update Journal Entry
+            $journalEntry = $expense->journalEntry;
+            $journalEntry->update([
+                'description' => $request->description,
+                'type' => 'expense',
+                'date' => $request->date,
+            ]);
+
+            // Update Journal Entry Line Items
+            $journalEntry->lineItems()->delete();
+
+            $journalEntry->lineItems()->createMany([
+                [
+                    'account_id' => $expense->account_id, // Credit account
+                    'credit' => $request->amount,
+                    'debit' => 0,
+                ],
+                [
+                    'account_id' => $expense->expenseCategory->account_id, // Debit account
+                    'debit' => $request->amount,
+                    'credit' => 0,
+                ],
+            ]);
+        });
 
         return redirect()->route('expenses.index')
             ->with('success', 'Expense updated successfully.');
@@ -70,7 +124,14 @@ class ExpenseController extends Controller
 
     public function destroy(Expense $expense)
     {
-        $expense->delete();
+        DB::transaction(function () use ($expense) {
+            // Delete related journal entry and line items
+            $expense->journalEntry->lineItems()->delete();
+            $expense->journalEntry()->delete();
+
+            // Delete Expense
+            $expense->delete();
+        });
 
         return redirect()->route('expenses.index')
             ->with('success', 'Expense deleted successfully.');

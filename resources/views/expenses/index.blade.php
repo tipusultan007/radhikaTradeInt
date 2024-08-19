@@ -10,7 +10,7 @@
 
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('expenses.store') }}" method="POST" class="container mt-4">
+            <form action="{{ route('expenses.store') }}" method="POST" class="mt-4">
                 @csrf
                 <div class="row">
                     <div class="form-group col-md-2">
@@ -25,7 +25,7 @@
                                required>
                     </div>
 
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
                         <label for="expense_category_id" class="form-label">Category:</label>
                         <select name="expense_category_id" id="expense_category_id" class="form-select" required
                                 data-placeholder="-- Select --">
@@ -41,7 +41,15 @@
                         <input type="text" name="description" id="description" class="form-control">
                     </div>
 
-                    <input type="hidden" name="account_id" value="5">
+                    <div class="form-group col-md-3">
+                        <label for="account_id" class="form-label">Account:</label>
+                        <select name="account_id" id="account_id" class="form-select">
+                            <option value="">None</option>
+                            @foreach($accounts as $account)
+                                <option value="{{ $account->id }}">{{ $account->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="form-group col d-flex align-items-end">
                         <button type="submit" class="btn btn-primary">Submit</button>

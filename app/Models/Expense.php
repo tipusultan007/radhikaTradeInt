@@ -26,4 +26,9 @@ class Expense extends Model
     {
         return $this->belongsTo(ExpenseCategory::class);
     }
+
+    public function journalEntry()
+    {
+        return $this->morphOne(JournalEntry::class, 'journalable');
+    }
 }
