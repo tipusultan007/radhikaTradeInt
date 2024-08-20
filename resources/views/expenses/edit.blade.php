@@ -16,10 +16,7 @@
                     <label for="date">Date:</label>
                     <input type="text" name="date" id="date" class="form-control flatpickr" value="{{ old('date', $expense->date) }}" required>
                 </div>
-                <div class="form-group">
-                    <label for="amount">Amount:</label>
-                    <input type="number" name="amount" id="amount" class="form-control" step="0.01" value="{{ old('amount', $expense->amount) }}" required>
-                </div>
+
                 <div class="form-group">
                     <label for="expense_category_id">Category:</label>
                     <select name="expense_category_id" id="expense_category_id" class="form-control" required>
@@ -30,7 +27,18 @@
                         @endforeach
                     </select>
                 </div>
-
+                <div class="form-group">
+                    <label for="amount">Amount:</label>
+                    <input type="number" name="amount" class="form-control" step="0.01" value="{{ old('amount', $expense->amount) }}" required>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="account_id" class="form-label">Account:</label>
+                    <select name="account_id" id="account_id" class="form-select">
+                        @foreach($accounts as $account)
+                            <option value="{{ $account->id }}">{{ $account->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="description">Description:</label>
                     <input type="text" name="description" id="description" class="form-control" value="{{ old('description', $expense->description) }}">

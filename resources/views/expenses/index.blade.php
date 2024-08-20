@@ -19,11 +19,6 @@
                                value="{{ date('Y-m-d') }}" required>
                     </div>
 
-                    <div class="form-group col-md-2">
-                        <label for="amount" class="form-label">Amount:</label>
-                        <input type="number" name="amount" id="amount" step="0.01" class="form-control"
-                               required>
-                    </div>
 
                     <div class="form-group col-md-2">
                         <label for="expense_category_id" class="form-label">Category:</label>
@@ -35,7 +30,11 @@
                             @endforeach
                         </select>
                     </div>
-
+                    <div class="form-group col-md-2">
+                        <label for="amount" class="form-label">Amount:</label>
+                        <input type="number" name="amount" id="amount" step="0.01" class="form-control"
+                               required>
+                    </div>
                     <div class="form-group col-md-3">
                         <label for="description" class="form-label">Description:</label>
                         <input type="text" name="description" id="description" class="form-control">
@@ -44,7 +43,6 @@
                     <div class="form-group col-md-3">
                         <label for="account_id" class="form-label">Account:</label>
                         <select name="account_id" id="account_id" class="form-select">
-                            <option value="">None</option>
                             @foreach($accounts as $account)
                                 <option value="{{ $account->id }}">{{ $account->name }}</option>
                             @endforeach
@@ -74,7 +72,7 @@
                 <tbody>
                 @foreach($expenses as $expense)
                     <tr>
-                        <td>{{ date('d/m/Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($expense->date)->format('d/m/Y') }}</td>
                         <td>{{ $expense->amount }}</td>
                         <td>{{ $expense->expenseCategory->name }}</td>
                         <td>{{ $expense->description }}</td>
