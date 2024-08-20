@@ -14,7 +14,7 @@
                 <select name="customer_id" id="customer_id" class="form-select select2" required>
                     <option value=""></option>
                     @foreach($customers as $customer)
-                        <option value="{{ $customer->id }}" {{ $customer->id == old('customer_id', $sale->customer_id) ? 'selected' : '' }}>
+                        <option data-type="{{ $customer->type }}" value="{{ $customer->id }}" {{ $customer->id == old('customer_id', $sale->customer_id) ? 'selected' : '' }}>
                             {{ $customer->name }} - {{ strtoupper($customer->type) }}
                         </option>
                     @endforeach
@@ -82,21 +82,31 @@
                         <th>Subtotal</th> <td><input type="text" name="subtotal" class="form-control subtotal" value="{{ $sale->subtotal }}"></td>
                     </tr>
                     <tr>
-                        <th>Carrying Cost</th> <td><input type="text" name="carrying_cost" class="form-control carrying_cost" value="{{ $sale->carrying_cost }}"></td>
+                        <th>Customer Delivery Charge</th> <td><input type="text" value="{{ $sale->customer_delivery_cost??'0' }}" name="customer_delivery_cost" class="form-control customer_delivery_cost"></td>
                     </tr>
                     <tr>
-                        <th>Carrying Cost Bearer</th> <td>
-                            <select name="carrying_cost_bearer" class="carrying_cost_bearer select2">
-                                <option value="customer" {{ $sale->carrying_cost_bearer == 'customer' ? 'selected' : '' }}>Customer</option>
-                                <option value="owner" {{ $sale->carrying_cost_bearer == 'owner' ? 'selected' : '' }}>Owner</option>
-                            </select>
-                        </td>
+                        <th>Owner Delivery Charge</th> <td><input type="text" value="{{ $sale->owner_delivery_cost??'0' }}" name="owner_delivery_cost" class="form-control owner_delivery_cost"></td>
                     </tr>
                     <tr>
-                        <th>Discount</th> <td><input type="text" name="discount" class="form-control discount" value="{{ $sale->discount }}"></td>
+                        <th>Discount</th> <td><input type="text" name="discount" class="form-control discount" value="{{ $sale->discount??'0' }}"></td>
                     </tr>
                     <tr>
                         <th>Total</th> <td><input type="text" name="total" class="form-control total" value="{{ $sale->total }}"></td>
+                    </tr>
+                    <tr>
+                        <th>Paid Amount</th> <td><input type="text" name="paid_amount" value="{{ $sale->paid_amount??'0' }}" class="form-control paid_amount"></td>
+                    </tr>
+                    <tr>
+                        <th>Pay via</th> <td>
+                            <select name="account_id" id="account_id" class="select2">
+                                <option value=""></option>
+                                @forelse($accounts as $account)
+                                    <option value="{{ $account->id }}" {{ $sale->account_id == $account->id?'selected':'' }}>{{ $account->name }}</option>
+                                @empty
+                                    <option value="" disabled>No payment method found!</option>
+                                @endforelse
+                            </select>
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="2">
@@ -186,9 +196,9 @@
             $('.subtotal').val(subtotal.toFixed(2));
 
             // Calculate total
-            const carryingCost = parseFloat($('.carrying_cost').val()) || 0;
+            const customerCarryingCost = parseFloat($('.customer_delivery_cost').val()) || 0;
+            const ownerCarryingCost = parseFloat($('.owner_delivery_cost').val()) || 0;
             const discount = parseFloat($('.discount').val()) || 0;
-            const carryingCostBearer = $('.carrying_cost_bearer').val();
 
             let total = subtotal;
 
@@ -196,17 +206,14 @@
             total -= discount;
 
             // Add carrying cost if bearer is customer
-            if (carryingCostBearer === 'customer') {
-                total += carryingCost;
-            }
+            total += customerCarryingCost;
 
             // Display total
             $('.total').val(total.toFixed(2));
         }
 
         // Calculate totals on input changes
-        $(document).on('input', '#sale-items input[name^="items"][name$="[quantity]"], #sale-items input[name^="items"][name$="[price]"], .carrying_cost, .discount', calculateTotals);
-        $(document).on('change', '.carrying_cost_bearer', calculateTotals);
+        $(document).on('input', '#sale-items input[name^="items"][name$="[quantity]"], #sale-items input[name^="items"][name$="[price]"], .customer_delivery_cost, .discount', calculateTotals);
 
         toastr.options = {
             "closeButton": true,
@@ -218,6 +225,7 @@
             var $row = $(this).closest('tr');
             var product_id = $row.find('select[name$="[product_id]"]').val();
             var packaging_type_id = $row.find('select[name$="[packaging_type_id]"]').val();
+            var customer_type = $('#customer_id').find('option:selected').data('type');
 
             if (product_id && packaging_type_id) {
                 $.ajax({
@@ -228,19 +236,39 @@
                         packaging_type_id: packaging_type_id
                     },
                     success: function(response) {
-                        $row.find('input[name$="[price]"]').val(response.sale_price);
+                        var price = 0;
+                        switch (customer_type) {
+                            case 'dealer':
+                                price = response.dealer_price;
+                                break;
+                            case 'commission_agent':
+                                price = response.commission_agent_price;
+                                break;
+                            case 'retailer':
+                                price = response.retailer_price;
+                                break;
+                            case 'wholesale':
+                                price = response.wholesale_price;
+                                break;
+                            case 'retail':
+                                price = response.retail_price;
+                                break;
+                            default:
+                                price = response.sale_price;
+                                break;
+                        }
+
+                        $row.find('input[name$="[price]"]').val(price);
                         $row.find('input[name$="[quantity]"]').attr('max', response.stock);
 
                         if (response.stock <= 0) {
-                            //alert('Selected product is out of stock!');
                             toastr.warning('Selected product is out of stock!');
-                        }else {
+                        } else {
                             $row.find('input[name$="[quantity]"]').val(1);
                             calculateTotals();
                         }
                     },
                     error: function() {
-                        //alert('Product or packaging type not found in warehouse.');
                         toastr.error('Product or packaging type not found in warehouse.');
                         $row.find('input[name$="[price]"]').val(0);
                         $row.find('input[name$="[quantity]"]').val(0).attr('max', '');
@@ -249,6 +277,20 @@
                 });
             }
         });
+
+        $(document).ready(function() {
+            // Listen for changes to the paid_amount input
+            $('.paid_amount').on('input', function() {
+                var paidAmount = parseFloat($(this).val());
+
+                if (paidAmount > 0) {
+                    $('#account_id').attr('required', true);
+                } else {
+                    $('#account_id').removeAttr('required');
+                }
+            });
+        });
+
     </script>
     <script>
         $(".select2").select2({

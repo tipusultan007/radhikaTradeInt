@@ -32,8 +32,8 @@ class Sale extends Model
         return $this->hasMany(SaleDetail::class);
     }
 
-    public function journalEntries()
+    public function journalEntry()
     {
-        return $this->morphMany(JournalEntry::class, 'journalable');
+        return $this->morphOne(JournalEntry::class, 'journalable');
     }
 }

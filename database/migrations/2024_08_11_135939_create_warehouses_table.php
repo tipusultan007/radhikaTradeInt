@@ -16,8 +16,12 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('packaging_type_id');
             $table->decimal('stock', 8, 2);
-            $table->decimal('cost', 10, 2); // Added cost field
-            $table->decimal('sale_price', 10, 2); // Added sale price field
+            $table->decimal('sale_price', 10, 2)->default(0);
+            $table->decimal('dealer_price', 10, 2)->default(0);
+            $table->decimal('commission_agent_price', 10, 2)->default(0);
+            $table->decimal('retailer_price', 10, 2)->default(0);
+            $table->decimal('retail_price', 10, 2)->default(0);
+            $table->decimal('wholesale_price', 10, 2)->default(0);
             $table->timestamps();
         });
     }

@@ -13,7 +13,7 @@
                 <select name="customer_id" id="customer_id" class="form-select select2" required>
                     <option value=""></option>
                     @foreach($customers as $customer)
-                        <option value="{{ $customer->id }}">{{ $customer->name }} - {{ strtoupper($customer->type) }}</option>
+                        <option data-type="{{ $customer->type }}" value="{{ $customer->id }}">{{ $customer->name }} - {{ strtoupper($customer->type) }}</option>
                     @endforeach
                 </select>
             </div>
@@ -214,10 +214,12 @@
             "positionClass": "toast-top-right",
         };
         // When product or packaging type changes
+
         $(document).on('change', 'select[name^="items"]', function() {
             var $row = $(this).closest('tr');
             var product_id = $row.find('select[name$="[product_id]"]').val();
             var packaging_type_id = $row.find('select[name$="[packaging_type_id]"]').val();
+            var customer_type = $('#customer_id').find('option:selected').data('type');
 
             if (product_id && packaging_type_id) {
                 $.ajax({
@@ -228,19 +230,39 @@
                         packaging_type_id: packaging_type_id
                     },
                     success: function(response) {
-                        $row.find('input[name$="[price]"]').val(response.sale_price);
+                        var price = 0;
+                        switch (customer_type) {
+                            case 'dealer':
+                                price = response.dealer_price;
+                                break;
+                            case 'commission_agent':
+                                price = response.commission_agent_price;
+                                break;
+                            case 'retailer':
+                                price = response.retailer_price;
+                                break;
+                            case 'wholesale':
+                                price = response.wholesale_price;
+                                break;
+                            case 'retail':
+                                price = response.retail_price;
+                                break;
+                            default:
+                                price = response.sale_price;
+                                break;
+                        }
+
+                        $row.find('input[name$="[price]"]').val(price);
                         $row.find('input[name$="[quantity]"]').attr('max', response.stock);
 
                         if (response.stock <= 0) {
-                            //alert('Selected product is out of stock!');
                             toastr.warning('Selected product is out of stock!');
-                        }else {
+                        } else {
                             $row.find('input[name$="[quantity]"]').val(1);
                             calculateTotals();
                         }
                     },
                     error: function() {
-                        //alert('Product or packaging type not found in warehouse.');
                         toastr.error('Product or packaging type not found in warehouse.');
                         $row.find('input[name$="[price]"]').val(0);
                         $row.find('input[name$="[quantity]"]').val(0).attr('max', '');

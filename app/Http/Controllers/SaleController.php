@@ -46,9 +46,10 @@ class SaleController extends Controller
         $customers = Customer::all();
         $products = Product::all();
         $packagingTypes = PackagingType::all();
+        $accounts = Account::where('type','asset')->whereNotIn('id',[2,3,4])->get();
 
         // Return the view with the sale data
-        return view('sales.edit', compact('sale', 'customers', 'products', 'packagingTypes'));
+        return view('sales.edit', compact('sale', 'customers', 'products', 'packagingTypes','accounts'));
     }
     // Create a new sale
     /*public function store(Request $request)
@@ -165,7 +166,7 @@ class SaleController extends Controller
             'items.*.price' => 'required|numeric|min:0',
         ]);
 
-        DB::transaction(function () use ($validated, $id) {
+        DB::transaction(function () use ($validated,$request, $id) {
             // Fetch the existing sale record
             $sale = Sale::findOrFail($id);
 
@@ -181,7 +182,7 @@ class SaleController extends Controller
             }
 
             // Update the Sale entry
-            $sale->update($validated);
+            $sale->update($request->except('items'));
 
             $this->createOrUpdateJournalEntryForSale($sale);
 
@@ -223,6 +224,7 @@ class SaleController extends Controller
         DB::transaction(function () use ($id) {
             $sale = Sale::findOrFail($id);
 
+
             // Revert stock before deleting
             foreach ($sale->details as $detail) {
                 $warehouse = Warehouse::where('product_id', $detail->product_id)
@@ -234,108 +236,39 @@ class SaleController extends Controller
                 }
             }
 
+            $sale->journalEntry->lineItems()->delete();
+            $sale->journalEntry()->delete();
+
             $sale->delete();
         });
 
         return redirect()->route('sales.index')->with('success', 'Sale deleted successfully');
     }
-
-    private function createJournalEntryForSale(Sale $sale)
+    private function createOrUpdateJournalEntryForSale(Sale $sale)
     {
-        // Adjust accounts for sales, receivables, and cash/bank
-        $salesAccount = Account::where('code', 'sales')->first();
-        $receivableAccount = Account::where('code', 'receivables')->first();
-        $cashAccount = Account::where('code', 'cash')->first();  // or 'bank' for bank transactions
+        // Retrieve accounts
+        $salesAccount = 6;
+        $receivableAccount = 3;
 
         $paidAmount = $sale->paid_amount;
         $totalAmount = $sale->total;
+        $discountAmount = $sale->discount ?? 0; // If no discount, assume 0
         $dueAmount = $totalAmount - $paidAmount;
 
-        // Create a new Journal Entry for the sale
-        $journalEntry = $sale->journalEntries()->create([
-            'customer_id' => $sale->customer_id,
-            'type' => 'sale',
-            'date' => $sale->date,
-            'description' => 'Sale entry for sale ID: ' . $sale->id,
-        ]);
-
-        // Scenario 1: Full Payment
-        if ($paidAmount == $totalAmount) {
-            // Debit the Cash/Bank account
-            $journalEntry->lineItems()->create([
-                'account_id' => $cashAccount->id,
-                'debit' => $paidAmount,
-                'credit' => 0,
-            ]);
-
-            // Credit the Sales account
-            $journalEntry->lineItems()->create([
-                'account_id' => $salesAccount->id,
-                'debit' => 0,
-                'credit' => $totalAmount,
-            ]);
-
-            // Scenario 2: Partial Payment
-        } elseif ($paidAmount > 0 && $paidAmount < $totalAmount) {
-            // Debit the Cash/Bank account for the paid amount
-            $journalEntry->lineItems()->create([
-                'account_id' => $cashAccount->id,
-                'debit' => $paidAmount,
-                'credit' => 0,
-            ]);
-
-            // Debit the Receivables account for the remaining due amount
-            $journalEntry->lineItems()->create([
-                'account_id' => $receivableAccount->id,
-                'debit' => $dueAmount,
-                'credit' => 0,
-            ]);
-
-            // Credit the Sales account for the total amount
-            $journalEntry->lineItems()->create([
-                'account_id' => $salesAccount->id,
-                'debit' => 0,
-                'credit' => $totalAmount,
-            ]);
-
-            // Scenario 3: Full Due
-        } else {
-            // Debit the Receivables account for the full amount
-            $journalEntry->lineItems()->create([
-                'account_id' => $receivableAccount->id,
-                'debit' => $totalAmount,
-                'credit' => 0,
-            ]);
-
-            // Credit the Sales account for the total amount
-            $journalEntry->lineItems()->create([
-                'account_id' => $salesAccount->id,
-                'debit' => 0,
-                'credit' => $totalAmount,
-            ]);
-        }
-    }
-
-    private function updateJournalEntryForSale(Sale $sale)
-    {
-        // Adjust accounts for sales, receivables, and cash/bank
-        $salesAccount = Account::where('code', 'sales')->first();
-        $receivableAccount = Account::where('code', 'receivables')->first();
-        $cashAccount = Account::where('code', 'cash')->first();  // or 'bank' for bank transactions
-
-        $paidAmount = $sale->paid_amount;
-        $totalAmount = $sale->total;
-        $dueAmount = $totalAmount - $paidAmount;
-
-        // Retrieve the existing journal entry for the sale
-        $journalEntry = $sale->journalEntries()->first();
+        // Find or create the Journal Entry for the sale
+        $journalEntry = $sale->journalEntry()->first(); // Get the existing journal entry if it exists
 
         if ($journalEntry) {
-            // Delete existing journal entry line items
+            // Update the existing journal entry
+            $journalEntry->update([
+                'customer_id' => $sale->customer_id,
+                'date' => $sale->date,
+            ]);
+            // Clear previous line items
             $journalEntry->lineItems()->delete();
         } else {
-            // If no journal entry exists, create a new one
-            $journalEntry = $sale->journalEntries()->create([
+            // Create a new journal entry
+            $journalEntry = $sale->journalEntry()->create([
                 'customer_id' => $sale->customer_id,
                 'type' => 'sale',
                 'date' => $sale->date,
@@ -347,87 +280,6 @@ class SaleController extends Controller
         if ($paidAmount == $totalAmount) {
             // Debit the Cash/Bank account
             $journalEntry->lineItems()->create([
-                'account_id' => $cashAccount->id,
-                'debit' => $paidAmount,
-                'credit' => 0,
-            ]);
-
-            // Credit the Sales account
-            $journalEntry->lineItems()->create([
-                'account_id' => $salesAccount->id,
-                'debit' => 0,
-                'credit' => $totalAmount,
-            ]);
-
-            // Scenario 2: Partial Payment
-        } elseif ($paidAmount > 0 && $paidAmount < $totalAmount) {
-            // Debit the Cash/Bank account for the paid amount
-            $journalEntry->lineItems()->create([
-                'account_id' => $cashAccount->id,
-                'debit' => $paidAmount,
-                'credit' => 0,
-            ]);
-
-            // Debit the Receivables account for the remaining due amount
-            $journalEntry->lineItems()->create([
-                'account_id' => $receivableAccount->id,
-                'debit' => $dueAmount,
-                'credit' => 0,
-            ]);
-
-            // Credit the Sales account for the total amount
-            $journalEntry->lineItems()->create([
-                'account_id' => $salesAccount->id,
-                'debit' => 0,
-                'credit' => $totalAmount,
-            ]);
-
-            // Scenario 3: Full Due
-        } else {
-            // Debit the Receivables account for the full amount
-            $journalEntry->lineItems()->create([
-                'account_id' => $receivableAccount->id,
-                'debit' => $totalAmount,
-                'credit' => 0,
-            ]);
-
-            // Credit the Sales account for the total amount
-            $journalEntry->lineItems()->create([
-                'account_id' => $salesAccount->id,
-                'debit' => 0,
-                'credit' => $totalAmount,
-            ]);
-        }
-    }
-
-    private function createOrUpdateJournalEntryForSale(Sale $sale)
-    {
-        // Retrieve accounts
-        $salesAccount = 6;
-        $receivableAccount = 3;
-        //$cashAccount = Account::where('code', 'cash')->first();
-        //$discountAccount = Account::where('code', 'discounts_given')->first();
-
-        $paidAmount = $sale->paid_amount;
-        $totalAmount = $sale->total;
-        $discountAmount = $sale->discount ?? 0; // If no discount, assume 0
-        $dueAmount = $totalAmount - $paidAmount;
-
-        // Create or update the Journal Entry for the sale
-        $journalEntry = $sale->journalEntries()->firstOrCreate([
-            'customer_id' => $sale->customer_id,
-            'type' => 'sale',
-            'date' => $sale->date,
-            'description' => 'Sale entry for sale ID: ' . $sale->id,
-        ]);
-
-        // Clear previous line items
-        $journalEntry->lineItems()->delete();
-
-        // Scenario 1: Full Payment
-        if ($paidAmount == $totalAmount) {
-            // Debit the Cash/Bank account
-            $journalEntry->lineItems()->create([
                 'account_id' => $sale->account_id,
                 'debit' => $paidAmount,
                 'credit' => 0,
@@ -435,20 +287,10 @@ class SaleController extends Controller
 
             // Credit the Sales account (minus discount)
             $journalEntry->lineItems()->create([
-                'account_id' => 6,
+                'account_id' => $salesAccount,
                 'debit' => 0,
-               /* 'credit' => $totalAmount + $discountAmount,*/
                 'credit' => $totalAmount,
             ]);
-
-            // Debit the Discounts Given account (if discount exists)
-           /* if ($discountAmount > 0) {
-                $journalEntry->lineItems()->create([
-                    'account_id' => $discountAccount->id,
-                    'debit' => $discountAmount,
-                    'credit' => 0,
-                ]);
-            }*/
 
             // Scenario 2: Partial Payment
         } elseif ($paidAmount > 0 && $paidAmount < $totalAmount) {
@@ -461,53 +303,33 @@ class SaleController extends Controller
 
             // Debit the Receivables account for the remaining due amount
             $journalEntry->lineItems()->create([
-                'account_id' => 3,
+                'account_id' => $receivableAccount,
                 'debit' => $dueAmount,
                 'credit' => 0,
             ]);
 
             // Credit the Sales account (minus discount)
             $journalEntry->lineItems()->create([
-                'account_id' => 6,
+                'account_id' => $salesAccount,
                 'debit' => 0,
-               /* 'credit' => $totalAmount + $discountAmount,*/
                 'credit' => $totalAmount,
             ]);
-
-            // Debit the Discounts Given account (if discount exists)
-            /*if ($discountAmount > 0) {
-                $journalEntry->lineItems()->create([
-                    'account_id' => $discountAccount->id,
-                    'debit' => $discountAmount,
-                    'credit' => 0,
-                ]);
-            }*/
 
             // Scenario 3: Full Due
         } else {
             // Debit the Receivables account for the full amount
             $journalEntry->lineItems()->create([
-                'account_id' => 3,
+                'account_id' => $receivableAccount,
                 'debit' => $totalAmount,
                 'credit' => 0,
             ]);
 
             // Credit the Sales account (minus discount)
             $journalEntry->lineItems()->create([
-                'account_id' => 6,
+                'account_id' => $salesAccount,
                 'debit' => 0,
-                /*'credit' => $totalAmount + $discountAmount,*/
                 'credit' => $totalAmount,
             ]);
-
-            // Debit the Discounts Given account (if discount exists)
-           /* if ($discountAmount > 0) {
-                $journalEntry->lineItems()->create([
-                    'account_id' => $discountAccount->id,
-                    'debit' => $discountAmount,
-                    'credit' => 0,
-                ]);
-            }*/
         }
     }
 

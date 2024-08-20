@@ -9,7 +9,16 @@ class Warehouse extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id','packaging_type_id','stock','cost','sale_price'];
+    protected $fillable = ['product_id',
+        'packaging_type_id',
+        'stock',
+        'sale_price',
+        'dealer_price',
+        'commission_agent_price',
+        'retailer_price',
+        'retail_price',
+        'wholesale_price',
+    ];
 
     public function product()
     {

@@ -27,13 +27,19 @@ class WarehouseController extends Controller
     // Store a new product in the warehouse
     public function store(Request $request)
     {
+
+        //dd(request()->all());
         // Validate the request data
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'packaging_type_id' => 'required|exists:packaging_types,id',
             'stock' => 'required|numeric|min:0',
-            'cost' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
+            'dealer_price' => 'required|numeric|min:0',
+            'commission_agent_price' => 'required|numeric|min:0',
+            'retailer_price' => 'required|numeric|min:0',
+            'retail_price' => 'required|numeric|min:0',
+            'wholesale_price' => 'required|numeric|min:0',
         ]);
 
         // Retrieve the product
@@ -45,10 +51,10 @@ class WarehouseController extends Controller
         }
 
         // Create a new warehouse record
-        Warehouse::create($validated);
+        $warehouse = Warehouse::create($validated);
 
         // Update the product stock
-        $product->initial_stock_kg -= $validated['stock'];
+        $product->initial_stock_kg -= $warehouse->packagingType->weight_kg * $validated['stock'];
         $product->save();
 
         return redirect()->route('warehouses.index')->with('success', 'Product added to warehouse successfully.');
@@ -72,6 +78,11 @@ class WarehouseController extends Controller
             'stock' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
+            'dealer_price' => 'required|numeric|min:0',
+            'commission_agent_price' => 'required|numeric|min:0',
+            'retailer_price' => 'required|numeric|min:0',
+            'retail_price' => 'required|numeric|min:0',
+            'wholesale_price' => 'required|numeric|min:0',
         ]);
 
         // Retrieve the product
@@ -113,12 +124,22 @@ class WarehouseController extends Controller
         if ($warehouse) {
             return response()->json([
                 'stock' => $warehouse->stock,
-                'sale_price' => $warehouse->sale_price
+                'sale_price' => $warehouse->sale_price,
+                'dealer_price' => $warehouse->dealer_price,
+                'commission_agent_price' => $warehouse->commission_agent_price,
+                'retailer_price' => $warehouse->retailer_price,
+                'retail_price' => $warehouse->retail_price,
+                'wholesale_price' => $warehouse->wholesale_price,
             ]);
         } else {
             return response()->json([
                 'stock' => 0,
-                'sale_price' => 0
+                'sale_price' => 0,
+                'dealer_price' => 0,
+                'commission_agent_price' => 0,
+                'retailer_price' => 0,
+                'retail_price' => 0,
+                'wholesale_price' => 0,
             ], 404);
         }
     }
