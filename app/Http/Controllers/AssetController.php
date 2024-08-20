@@ -19,7 +19,8 @@ class AssetController extends Controller
     // Show the form for creating a new asset
     public function create()
     {
-        return view('assets.create');
+        $accounts = Account::where('type','asset')->get();
+        return view('assets.create',compact('accounts'));
     }
 
     // Store a newly created asset in storage
@@ -39,7 +40,7 @@ class AssetController extends Controller
         $assetAccount = Account::where('name', 'Asset')->firstOrFail();
 
         // Fetch the Cash/Bank account (you can adjust this to another account as needed)
-        $cashAccount = Account::where('name', 'Cash')->firstOrFail();  // Replace with appropriate account
+        //$cashAccount = Account::where('name', 'Cash')->firstOrFail();  // Replace with appropriate account
 
         // Create a Journal Entry for the Asset
         $journalEntry = JournalEntry::create([
@@ -53,7 +54,7 @@ class AssetController extends Controller
         // Add line item to debit the Asset account
         JournalEntryLineItem::create([
             'journal_entry_id' => $journalEntry->id,
-            'account_id' => $assetAccount->id,
+            'account_id' => 4,
             'debit' => $asset->value,
             'credit' => 0,
         ]);
@@ -61,7 +62,7 @@ class AssetController extends Controller
         // Add line item to credit the Cash/Bank account
         JournalEntryLineItem::create([
             'journal_entry_id' => $journalEntry->id,
-            'account_id' => $cashAccount->id,
+            'account_id' => $asset->account_id,
             'debit' => 0,
             'credit' => $asset->value,
         ]);
@@ -78,7 +79,8 @@ class AssetController extends Controller
     // Show the form for editing the specified asset
     public function edit(Asset $asset)
     {
-        return view('assets.edit', compact('asset'));
+        $accounts = Account::where('type','asset')->get();
+        return view('assets.edit', compact('asset','accounts'));
     }
 
     // Update the specified asset in storage
@@ -100,10 +102,12 @@ class AssetController extends Controller
         if ($journalEntry) {
             $journalEntry->lineItems()->where('account_id', $asset->account_id)->update([
                 'debit' => $asset->value,
+                'date' => $asset->purchase_date,
             ]);
 
-            $journalEntry->lineItems()->where('account_id', $cashAccount->id)->update([
+            $journalEntry->lineItems()->where('account_id', $asset->account_id)->update([
                 'credit' => $asset->value,
+                'date' => $asset->purchase_date,
             ]);
         }
 

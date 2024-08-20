@@ -25,7 +25,9 @@
                 <td>{{ $user->email }}</td>
                 <td>{{ $user->address }}</td>
                 <td>
+{{--
                     <a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm">View</a>
+--}}
                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm">Edit</a>
                     <button class="btn btn-danger btn-sm" data-id="{{ $user->id }}" onclick="confirmDelete({{ $user->id }})">Delete</button>
                 </td>
@@ -54,7 +56,7 @@
             }).then((result) => {
                 if (result) {  // Check for result instead of result.isConfirmed
                     $.ajax({
-                        url: '/users/' + userId,
+                        url: '/admin/users/' + userId,
                         type: 'DELETE',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')
