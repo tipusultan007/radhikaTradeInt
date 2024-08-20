@@ -35,7 +35,7 @@
                     <label for="account_id" class="form-label">Account:</label>
                     <select name="account_id" id="account_id" class="form-select">
                         @foreach($accounts as $account)
-                            <option value="{{ $account->id }}">{{ $account->name }}</option>
+                            <option value="{{ $account->id }}" {{ $account->id == $expense->account_id?'selected':'' }}>{{ $account->name }}</option>
                         @endforeach
                     </select>
                 </div>
