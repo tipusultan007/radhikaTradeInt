@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('referrer_id')->nullable();
             $table->unsignedBigInteger('account_id')->nullable();
             $table->decimal('subtotal', 8, 2);
             $table->decimal('discount', 8, 2)->nullable();

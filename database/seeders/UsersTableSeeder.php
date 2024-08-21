@@ -19,12 +19,14 @@ class UsersTableSeeder extends Seeder
                 'name' => 'Admin User',
                 'email' => 'admin@example.com',
                 'phone' => '01829321686',
+                'basic_salary' => 10000,
                 'password' => Hash::make('password123'), // Always hash passwords
             ],
             [
                 'name' => 'Regular User',
                 'email' => 'user@example.com',
                 'phone' => '01515285761',
+                'basic_salary' => 9500,
                 'password' => Hash::make('password123'),
             ],
         ]);

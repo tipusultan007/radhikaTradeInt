@@ -21,6 +21,8 @@ class AccountsTableSeeder extends Seeder
             ['parent_id' => null, 'name' => 'Accounts Payable', 'type' => 'liability', 'code' => '2001', 'opening_balance' => 0.00],
             ['parent_id' => null, 'name' => 'Revenue', 'type' => 'revenue', 'code' => '3001', 'opening_balance' => 0.00],
             ['parent_id' => null, 'name' => 'Expenses', 'type' => 'expense', 'code' => '4001', 'opening_balance' => 0.00],
+            ['parent_id' => 7, 'name' => 'Salary', 'type' => 'expense', 'code' => '4002', 'opening_balance' => 0.00],
+            ['parent_id' => 7, 'name' => 'Commission', 'type' => 'expense', 'code' => '4003', 'opening_balance' => 0.00],
         ]);
     }
 }

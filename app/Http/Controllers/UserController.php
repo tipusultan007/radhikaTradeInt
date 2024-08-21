@@ -35,6 +35,7 @@ class UserController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'email' => $request->email,
+            'basic_salary' => $request->basic_salary,
             'password' => bcrypt($request->password),
         ]);
 
@@ -68,6 +69,7 @@ class UserController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'email' => $request->email,
+            'basic_salary' => $request->basic_salary,
             'password' => $request->password ? bcrypt($request->password) : $user->password,
         ]);
 

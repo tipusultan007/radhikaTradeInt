@@ -41,7 +41,10 @@
                         <label for="address">Address</label>
                         <input type="text" name="address" class="form-control" value="{{ $user->address }}">
                     </div>
-
+                    <div class="col-md-4 form-group">
+                        <label for="basic_salary">Basic Salary</label>
+                        <input type="text" name="basic_salary" class="form-control" value="{{ $user->basic_salary }}">
+                    </div>
                     <div class="col-md-4 form-group">
                         <label for="password">Password (leave blank to keep current password)</label>
                         <input type="password" name="password" class="form-control">

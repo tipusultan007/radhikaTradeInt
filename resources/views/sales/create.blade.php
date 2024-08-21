@@ -17,6 +17,18 @@
                     @endforeach
                 </select>
             </div>
+            @php
+                $commisionAgents = \App\Models\Customer::where('type','commission_agent')->get();
+            @endphp
+            <div class="col-md-4 form-group referrer" style="display: none">
+                <label for="referrer_id">Referrer</label>
+                <select name="referrer_id" id="referrer_id" class="form-select select2">
+                    <option value=""></option>
+                    @foreach($commisionAgents as $agent)
+                        <option data-type="{{ $agent->type }}" value="{{ $agent->id }}">{{ $agent->name }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
 
         <h3>Sale Items</h3>
@@ -214,6 +226,19 @@
             "positionClass": "toast-top-right",
         };
         // When product or packaging type changes
+        $('#customer_id').on('change', function() {
+            var selectedType = $('#customer_id option:selected').data('type');
+
+            if (selectedType === 'customer') {
+                $('.referrer').show();
+            } else {
+                $('.referrer').hide();
+                $('#referrer_id').val(null).trigger('change');
+            }
+        });
+
+        // Trigger change event on page load to ensure correct initial state
+        $('#customer_id').trigger('change');
 
         $(document).on('change', 'select[name^="items"]', function() {
             var $row = $(this).closest('tr');
@@ -235,9 +260,9 @@
                             case 'dealer':
                                 price = response.dealer_price;
                                 break;
-                            case 'commission_agent':
+                            /*case 'commission_agent':
                                 price = response.commission_agent_price;
-                                break;
+                                break;*/
                             case 'retailer':
                                 price = response.retailer_price;
                                 break;
@@ -290,7 +315,8 @@
         $(".select2").select2({
             theme: "bootstrap",
             width: "100%",
-            placeholder: " -- Select --"
+            placeholder: " -- Select --",
+            allowClear: true
         });
     </script>
 @endsection

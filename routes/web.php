@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SaleController;
@@ -31,6 +32,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('purchases', PurchaseController::class);
     Route::resource('users', UserController::class);
     Route::resource('assets', AssetController::class);
+    Route::resource('payroll', PayrollController::class);
 
     Route::get('/warehouse-info', [WarehouseController::class, 'getWarehouseInfo'])->name('warehouse.info');
 });

@@ -30,6 +30,7 @@
                 <option value="retailer" {{ old('type') == 'retailer' ? 'selected' : '' }}>Retailer</option>
                 <option value="wholesale" {{ old('type') == 'wholesale' ? 'selected' : '' }}>Wholesale</option>
                 <option value="retail" {{ old('type') == 'retail' ? 'selected' : '' }}>Retail</option>
+                <option value="customer" {{ old('type') == 'customer' ? 'selected' : '' }}>Customer</option>
             </select>
         </div>
 

@@ -17,6 +17,7 @@ class Sale extends Model
         'owner_delivery_cost',
         'discount',
         'paid_amount',
+        'referrer_id',
         'total',
         'note',
         'date'
@@ -26,7 +27,10 @@ class Sale extends Model
     {
         return $this->belongsTo(Customer::class);
     }
-
+    public function referrer()
+    {
+        return $this->belongsTo(Customer::class,'referrer_id');
+    }
     public function details()
     {
         return $this->hasMany(SaleDetail::class);

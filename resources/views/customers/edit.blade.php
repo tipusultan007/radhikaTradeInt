@@ -31,6 +31,7 @@
                 <option value="retailer" {{ old('type', $customer->type) == 'retailer' ? 'selected' : '' }}>Retailer</option>
                 <option value="wholesale" {{ old('type', $customer->type) == 'wholesale' ? 'selected' : '' }}>Wholesale</option>
                 <option value="retail" {{ old('type', $customer->type) == 'retail' ? 'selected' : '' }}>Retail</option>
+                <option value="customer" {{ old('type', $customer->type) == 'customer' ? 'selected' : '' }}>Customer</option>
             </select>
         </div>
         <button type="submit" class="btn btn-success">Update</button>

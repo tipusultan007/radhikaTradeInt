@@ -28,7 +28,7 @@ class CustomerController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
-            'type' => 'required|in:dealer,commission_agent,retailer,wholesale,retail', // Validate type
+            'type' => 'required|in:dealer,commission_agent,retailer,wholesale,retail,customer', // Validate type
         ]);
 
         // Create the customer
@@ -54,7 +54,7 @@ class CustomerController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
-            'type' => 'required|in:dealer,commission_agent,retailer,wholesale,retail', // Validate type
+            'type' => 'required|in:dealer,commission_agent,retailer,wholesale,retail,customer', // Validate type
         ]);
 
         // Update the customer with the validated data

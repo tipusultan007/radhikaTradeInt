@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('phone')->unique()->nullable();
             $table->string('address')->nullable();
             $table->string('email')->unique()->nullable();
+            $table->decimal('basic_salary', 10, 2)->default(0.00);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

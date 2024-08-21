@@ -23,6 +23,7 @@ class User extends Authenticatable
         'address',
         'phone',
         'password',
+        'basic_salary',
     ];
 
     /**
@@ -47,4 +48,26 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function salaryIncrements()
+    {
+        return $this->hasMany(SalaryIncrement::class);
+    }
+
+    public function getSalaryAttribute()
+    {
+        return $this->getLastIncrementedSalary();
+    }
+    public function getLastIncrementedSalary()
+    {
+        $lastIncrement = $this->salaryIncrements()->latest('increment_date')->first();
+
+        // If there are no increments, fall back to the basic_salary in the User model
+        return $lastIncrement ? $lastIncrement->new_salary : $this->basic_salary;
+    }
+    public function payrolls()
+    {
+        return $this->hasMany(Payroll::class);
+    }
+
 }
