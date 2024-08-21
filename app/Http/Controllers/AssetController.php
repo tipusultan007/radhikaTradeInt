@@ -6,6 +6,7 @@ use App\Models\Asset;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLineItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AssetController extends Controller
 {
@@ -33,41 +34,44 @@ class AssetController extends Controller
             'purchase_date' => 'required|date',
         ]);
 
-        // Create the Asset
-        $asset = Asset::create($request->all());
+        DB::beginTransaction();
 
-        // Fetch the Asset account
-        $assetAccount = Account::where('name', 'Asset')->firstOrFail();
+        try {
+            // Create the Asset
+            $asset = Asset::create($request->all());
 
-        // Fetch the Cash/Bank account (you can adjust this to another account as needed)
-        //$cashAccount = Account::where('name', 'Cash')->firstOrFail();  // Replace with appropriate account
+            // Create a Journal Entry for the Asset
+            $journalEntry = JournalEntry::create([
+                'journalable_type' => Asset::class,
+                'journalable_id' => $asset->id,
+                'type' => 'asset',
+                'date' => $asset->purchase_date,
+                'description' => 'Purchase of ' . $asset->name,
+            ]);
 
-        // Create a Journal Entry for the Asset
-        $journalEntry = JournalEntry::create([
-            'journalable_type' => Asset::class,
-            'journalable_id' => $asset->id,
-            'type' => 'asset',
-            'date' => $asset->purchase_date,
-            'description' => 'Purchase of ' . $asset->name,
-        ]);
+            // Add line item to debit the Asset account
+            JournalEntryLineItem::create([
+                'journal_entry_id' => $journalEntry->id,
+                'account_id' => 4,
+                'debit' => $asset->value,
+                'credit' => 0,
+            ]);
 
-        // Add line item to debit the Asset account
-        JournalEntryLineItem::create([
-            'journal_entry_id' => $journalEntry->id,
-            'account_id' => 4,
-            'debit' => $asset->value,
-            'credit' => 0,
-        ]);
+            // Add line item to credit the Cash/Bank account
+            JournalEntryLineItem::create([
+                'journal_entry_id' => $journalEntry->id,
+                'account_id' => $asset->account_id,
+                'debit' => 0,
+                'credit' => $asset->value,
+            ]);
 
-        // Add line item to credit the Cash/Bank account
-        JournalEntryLineItem::create([
-            'journal_entry_id' => $journalEntry->id,
-            'account_id' => $asset->account_id,
-            'debit' => 0,
-            'credit' => $asset->value,
-        ]);
+            DB::commit();
+            return redirect()->route('assets.index')->with('success', 'Asset created successfully with a journal entry.');
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return redirect()->back()->with('error', $exception->getMessage());
+        }
 
-        return redirect()->route('assets.index')->with('success', 'Asset created successfully with a journal entry.');
     }
 
     // Display the specified asset
@@ -93,47 +97,64 @@ class AssetController extends Controller
             'purchase_date' => 'required|date',
         ]);
 
-        // Update the Asset
-        $asset->update($request->all());
+        DB::beginTransaction();
 
-        // Optionally, adjust the journal entry if the asset's value has changed
-        $journalEntry = $asset->journalEntry;
+        try {
+            // Update the Asset
+            $asset->update($request->all());
 
-        if ($journalEntry) {
-            $journalEntry->lineItems()->where('account_id', $asset->account_id)->update([
-                'debit' => $asset->value,
-                'date' => $asset->purchase_date,
-            ]);
+            // Optionally, adjust the journal entry if the asset's value has changed
+            $journalEntry = $asset->journalEntry;
 
-            $journalEntry->lineItems()->where('account_id', $asset->account_id)->update([
-                'credit' => $asset->value,
-                'date' => $asset->purchase_date,
-            ]);
+            if ($journalEntry) {
+                $journalEntry->lineItems()->where('account_id', $asset->account_id)->update([
+                    'debit' => $asset->value,
+                    'date' => $asset->purchase_date,
+                ]);
+
+                $journalEntry->lineItems()->where('account_id', $asset->account_id)->update([
+                    'credit' => $asset->value,
+                    'date' => $asset->purchase_date,
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('assets.index')->with('success', 'Asset updated successfully.');
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return redirect()->back()->with('error', $exception->getMessage());
         }
 
-        return redirect()->route('assets.index')->with('success', 'Asset updated successfully.');
     }
 
     // Remove the specified asset from storage
     public function destroy(Asset $asset)
     {
-        // Find the related journal entry
-        $journalEntry = JournalEntry::where('journalable_type', Asset::class)
-            ->where('journalable_id', $asset->id)
-            ->first();
+        DB::beginTransaction();
 
-        // If a related journal entry exists, delete its line items first
-        if ($journalEntry) {
-            // Delete all related journal entry line items
-            $journalEntry->lineItems()->delete();
+        try {
+            // Find the related journal entry
+            $journalEntry = JournalEntry::where('journalable_type', Asset::class)
+                ->where('journalable_id', $asset->id)
+                ->first();
 
-            // Then delete the journal entry itself
-            $journalEntry->delete();
+            // If a related journal entry exists, delete its line items first
+            if ($journalEntry) {
+                // Delete all related journal entry line items
+                $journalEntry->lineItems()->delete();
+
+                // Then delete the journal entry itself
+                $journalEntry->delete();
+            }
+
+            // Finally, delete the asset
+            $asset->delete();
+
+            DB::commit();
+            return redirect()->route('assets.index')->with('success', 'Asset and related journal entry deleted successfully.');
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return redirect()->back()->with('error', $exception->getMessage());
         }
-
-        // Finally, delete the asset
-        $asset->delete();
-
-        return redirect()->route('assets.index')->with('success', 'Asset and related journal entry deleted successfully.');
     }
 }

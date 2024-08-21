@@ -57,7 +57,19 @@
                         <label for="total">Total Salary</label>
                         <input type="text" id="total" class="form-control" value="{{ $payroll->net_pay }}" readonly>
                     </div>
-
+                    @php
+                        $accounts = \App\Models\Account::where('type','asset')
+                        ->whereNotIn('id',[3,4])->get();
+                    @endphp
+                    <div class="col-md-4 form-group">
+                        <label for="">Account</label>
+                        <select name="account_id" id="account_id" class="select2">
+                            @forelse($accounts as $account)
+                                <option value="{{ $account->id }}" {{ $account->id === $payroll->account_id?'selected':'' }}>{{ $account->name }}</option>
+                            @empty
+                            @endforelse
+                        </select>
+                    </div>
                     <div class="col-md-4 form-group">
                         <label for="pay_date">Pay Date</label>
                         <input type="text" name="pay_date" id="pay_date" class="form-control flatpickr" value="{{ $payroll->pay_date }}" required>

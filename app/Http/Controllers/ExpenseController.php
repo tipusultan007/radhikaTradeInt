@@ -51,15 +51,16 @@ class ExpenseController extends Controller
             // Create Journal Entry Line Items
             $journalEntry->lineItems()->createMany([
                 [
-                    'account_id' => $expense->account_id, // Credit account
-                    'credit' => $request->amount,
-                    'debit' => 0,
-                ],
-                [
                     'account_id' => $expense->expenseCategory->account_id, // Debit account
                     'debit' => $request->amount,
                     'credit' => 0,
                 ],
+                [
+                    'account_id' => $expense->account_id, // Credit account
+                    'credit' => $request->amount,
+                    'debit' => 0,
+                ],
+
             ]);
         });
 
@@ -105,15 +106,16 @@ class ExpenseController extends Controller
             $journalEntry->lineItems()->delete();
 
             $journalEntry->lineItems()->createMany([
-                [
-                    'account_id' => $expense->account_id, // Credit account
-                    'credit' => $request->amount,
-                    'debit' => 0,
-                ],
+
                 [
                     'account_id' => $expense->expenseCategory->account_id, // Debit account
                     'debit' => $request->amount,
                     'credit' => 0,
+                ],
+                [
+                    'account_id' => $expense->account_id, // Credit account
+                    'credit' => $request->amount,
+                    'debit' => 0,
                 ],
             ]);
         });

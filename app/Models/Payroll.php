@@ -12,6 +12,7 @@ class Payroll extends Model
     protected $fillable = [
         'user_id',
         'salary',
+        'account_id',
         'bonus',
         'deductions',
         'net_pay',
@@ -22,6 +23,11 @@ class Payroll extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
     }
 
     public function journalEntry()
