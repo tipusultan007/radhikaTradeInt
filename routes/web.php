@@ -10,6 +10,7 @@ use App\Http\Controllers\JournalController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SalaryIncrementController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseController;
@@ -36,5 +37,9 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('payroll', PayrollController::class);
     Route::get('/journals', [JournalController::class, 'index'])->name('journals.index');
     Route::get('/warehouse-info', [WarehouseController::class, 'getWarehouseInfo'])->name('warehouse.info');
+    Route::post('/salary-increments', [SalaryIncrementController::class, 'store'])->name('salary-increments.store');
+
+
+
 });
 

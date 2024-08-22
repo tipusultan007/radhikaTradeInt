@@ -20,6 +20,10 @@ class Payroll extends Model
         'month',
     ];
 
+    public $casts = [
+        'pay_date' => 'date'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

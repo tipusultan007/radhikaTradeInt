@@ -28,8 +28,16 @@
 {{--
                     <a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm">View</a>
 --}}
-                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <button class="btn btn-danger btn-sm" data-id="{{ $user->id }}" onclick="confirmDelete({{ $user->id }})">Delete</button>
+                    <div class="dropdown">
+                        <button class="btn btn-icon btn-clean me-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="">
+                            <a class="dropdown-item" href="{{ route('users.show', $user->id) }}">View</a>
+                            <a class="dropdown-item" href="{{ route('users.edit', $user->id) }}">Edit</a>
+                            <a class="dropdown-item" href="javascript:;" data-id="{{ $user->id }}" onclick="confirmDelete({{ $user->id }})">Delete</a>
+                        </div>
+                    </div>
                 </td>
             </tr>
         @endforeach

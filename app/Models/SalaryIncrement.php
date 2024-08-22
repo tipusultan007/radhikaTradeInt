@@ -14,7 +14,9 @@ class SalaryIncrement extends Model
         'new_salary',
         'increment_date',
     ];
-
+    public $casts = [
+        'increment_date' => 'date'
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);

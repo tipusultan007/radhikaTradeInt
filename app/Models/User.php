@@ -60,7 +60,7 @@ class User extends Authenticatable
     }
     public function getLastIncrementedSalary()
     {
-        $lastIncrement = $this->salaryIncrements()->latest('increment_date')->first();
+        $lastIncrement = $this->salaryIncrements()->latest()->first();
 
         // If there are no increments, fall back to the basic_salary in the User model
         return $lastIncrement ? $lastIncrement->new_salary : $this->basic_salary;

@@ -15,10 +15,9 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped table-bordered">
                     <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Name</th>
                         <th>Phone</th>
                         <th>Address</th>
@@ -29,17 +28,20 @@
                     <tbody>
                     @foreach ($customers as $customer)
                         <tr>
-                            <td>{{ $customer->id }}</td>
                             <td>{{ $customer->name }}</td>
                             <td>{{ $customer->phone }}</td>
                             <td>{{ $customer->address }}</td>
                             <td>{{ $customer->type }}</td>
                             <td>
-                                <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-warning btn-icon btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                                 <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                                    <button type="submit" class="btn btn-danger btn-icon btn-sm" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </form>
                             </td>
                         </tr>

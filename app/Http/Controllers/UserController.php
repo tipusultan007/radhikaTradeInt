@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SalaryIncrement;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -91,5 +92,7 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+
 }
 
