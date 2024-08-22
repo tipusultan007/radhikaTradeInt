@@ -20,5 +20,8 @@ class Purchase extends Model
     {
         return $this->belongsTo(Product::class);
     }
-
+    public function journalEntry()
+    {
+        return $this->morphOne(JournalEntry::class, 'journalable');
+    }
 }

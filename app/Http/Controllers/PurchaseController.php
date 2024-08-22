@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
+use App\Models\JournalEntry;
+use App\Models\JournalEntryLineItem;
 use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
@@ -20,7 +23,8 @@ class PurchaseController extends Controller
     public function create()
     {
         $products = Product::all();
-        return view('purchases.create', compact('products'));
+        $accounts = Account::where('type','asset')->whereNotIn('id',[3,4])->get();
+        return view('purchases.create', compact('products','accounts'));
     }
 
     // Store a newly created purchase in storage
@@ -45,6 +49,32 @@ class PurchaseController extends Controller
             $product = Product::find($request->product_id);
             $product->initial_stock_kg += $request->quantity_kg;
             $product->save();
+
+            $journalEntry = JournalEntry::create([
+                'customer_id' => null,
+                'journalable_type' => Purchase::class,
+                'journalable_id' => $purchase->id,
+                'type' => 'purchase',
+                'date' => $request->input('date'),
+                'description' => 'Purchase entry for purchase ID: ' . $purchase->id,
+            ]);
+
+            // Record the debit entry for the expense/asset account
+            JournalEntryLineItem::create([
+                'journal_entry_id' => $journalEntry->id,
+                'account_id' => 7,
+                'debit' => $request->input('purchase_price'),
+                'credit' => 0,
+            ]);
+
+            // Record the credit entry for the payment account (cash or accounts payable)
+            JournalEntryLineItem::create([
+                'journal_entry_id' => $journalEntry->id,
+                'account_id' => $request->input('account_id'),
+                'debit' => 0,
+                'credit' => $request->input('purchase_price'),
+            ]);
+
 
             DB::commit();
 
@@ -89,6 +119,34 @@ class PurchaseController extends Controller
             // Update the purchase
             $purchase->update($validated);
 
+            // Find or create the journal entry associated with the purchase
+            $journalEntry = $purchase->journalEntry()->updateOrCreate([
+                'journalable_type' => Purchase::class,
+                'journalable_id' => $purchase->id,
+            ], [
+                'type' => 'purchase',
+                'date' => $request->input('date'),
+                'description' => 'Purchase entry for purchase ID: ' . $purchase->id,
+            ]);
+
+            // Delete existing line items for this journal entry
+            JournalEntryLineItem::where('journal_entry_id', $journalEntry->id)->delete();
+            // Record the debit entry for the expense/asset account
+            JournalEntryLineItem::create([
+                'journal_entry_id' => $journalEntry->id,
+                'account_id' => 7,
+                'debit' => $request->input('purchase_price'),
+                'credit' => 0,
+            ]);
+
+            // Record the credit entry for the payment account (cash or accounts payable)
+            JournalEntryLineItem::create([
+                'journal_entry_id' => $journalEntry->id,
+                'account_id' => $request->input('account_id'),
+                'debit' => 0,
+                'credit' => $request->input('purchase_price'),
+            ]);
+
             DB::commit();
 
             return redirect()->route('purchases.index')->with('success', 'Purchase updated successfully.');
@@ -111,6 +169,9 @@ class PurchaseController extends Controller
             $product = $purchase->product;
             $product->initial_stock_kg -= $purchase->quantity_kg;
             $product->save();
+
+            $purchase->journalEntry->lineItems()->delete();
+            $purchase->journalEntry()->delete();
 
             // Delete the purchase
             $purchase->delete();

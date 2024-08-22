@@ -31,10 +31,29 @@
                 <input type="number" name="purchase_price" id="purchase_price" class="form-control" required min="0" step="0.01">
             </div>
             <div class="form-group">
+                <label for="">Account</label>
+                <select name="account_id" id="account_id" class="select2">
+                    <option value=""></option>
+                    @forelse($accounts as $account)
+                        <option value="{{ $account->id }}">{{ $account->name }}</option>
+                    @empty
+                        <option value="" disabled>No payment method found!</option>
+                    @endforelse
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="purchase_price">Purchase Date</label>
                 <input type="text" name="date" id="date" class="form-control flatpickr" value="{{ date('Y-m-d') }}" required>
             </div>
             <button type="submit" class="btn btn-success">Add Purchase</button>
         </form>
     </div>
+@endsection
+@section('js')
+    <script>
+        $(".select2").select2({
+            theme: 'bootstrap',
+            width: '100%'
+        })
+    </script>
 @endsection
