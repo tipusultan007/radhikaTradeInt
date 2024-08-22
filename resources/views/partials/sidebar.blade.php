@@ -100,6 +100,11 @@
                                     <span class="sub-item">Journal</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('balance_sheet.show') }}">
+                                    <span class="sub-item">Balance Sheet</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>
