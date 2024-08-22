@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\BalanceSheetController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
@@ -38,6 +39,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/journals', [JournalController::class, 'index'])->name('journals.index');
     Route::get('/warehouse-info', [WarehouseController::class, 'getWarehouseInfo'])->name('warehouse.info');
     Route::post('/salary-increments', [SalaryIncrementController::class, 'store'])->name('salary-increments.store');
+    Route::get('/balance-sheet', [BalanceSheetController::class, 'show'])->name('balance_sheet.show');
 
 
 

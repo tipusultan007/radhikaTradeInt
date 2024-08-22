@@ -36,4 +36,11 @@ class Account extends Model
     {
         return $this->hasMany(Ledger::class);
     }
+
+    public function balance()
+    {
+        $debits = $this->journalEntryLineItems()->sum('debit');
+        $credits = $this->journalEntryLineItems()->sum('credit');
+        return $debits - $credits;
+    }
 }
