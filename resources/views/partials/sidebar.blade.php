@@ -58,6 +58,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('purchases.index') }}">
+                        <i class="fas fa-boxes"></i>
+                        <p>Purchases</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('warehouses.index') }}">
                         <i class="fas fa-warehouse"></i>
                         <p>Warehouse</p>
