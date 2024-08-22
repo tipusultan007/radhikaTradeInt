@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JournalController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
@@ -33,7 +34,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('assets', AssetController::class);
     Route::resource('payroll', PayrollController::class);
-
+    Route::get('/journals', [JournalController::class, 'index'])->name('journals.index');
     Route::get('/warehouse-info', [WarehouseController::class, 'getWarehouseInfo'])->name('warehouse.info');
 });
 

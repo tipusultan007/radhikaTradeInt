@@ -15,7 +15,7 @@ class ExpenseController extends Controller
     {
         $categories = ExpenseCategory::all();
         $accounts = Account::all();
-        $expenses = Expense::with('expenseCategory', 'account', 'journalEntry')->get();
+        $expenses = Expense::with('expenseCategory', 'account', 'journalEntry')->paginate(10);
         return view('expenses.index', compact('expenses','accounts','categories'));
     }
 

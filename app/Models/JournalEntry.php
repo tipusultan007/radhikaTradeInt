@@ -18,6 +18,10 @@ class JournalEntry extends Model
         'description'
     ];
 
+    protected $casts = [
+        'date' => 'date',
+    ];
+
     public function journalable()
     {
         return $this->morphTo();
