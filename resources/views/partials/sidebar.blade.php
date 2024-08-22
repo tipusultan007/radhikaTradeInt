@@ -69,17 +69,39 @@
                         <p>Sales</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('accounts.index') }}">
-                        <i class="fas fa-cart-arrow-down"></i>
-                        <p>Accounts</p>
-                    </a>
-                </li>
+
                 <li class="nav-item">
                     <a href="{{ route('assets.index') }}">
                         <i class="fas fa-cart-arrow-down"></i>
                         <p>Assets</p>
                     </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('payroll.index') }}">
+                        <i class="fas fa-cart-arrow-down"></i>
+                        <p>Payroll</p>
+                    </a>
+                </li>
+                <li class="nav-item submenu">
+                    <a data-bs-toggle="collapse" href="#Accounting">
+                        <i class="fas fa-money-check"></i>
+                        <p>Accounting</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="Accounting">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('accounts.index') }}">
+                                    <span class="sub-item">Accounts</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('journals.index') }}">
+                                    <span class="sub-item">Journal</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
                 <li class="nav-item submenu">
                     <a data-bs-toggle="collapse" href="#Expense_Management">
@@ -94,7 +116,7 @@
                                     <span class="sub-item">Expense Categories</span>
                                 </a>
                             </li>
-                            <li class="active">
+                            <li>
                                 <a href="{{ route('expenses.index') }}">
                                     <span class="sub-item">Expenses</span>
                                 </a>

@@ -12,8 +12,8 @@
         <tr>
             <th>Name</th>
             <th>Phone</th>
-            <th>Email</th>
             <th>Address</th>
+            <th>Basic Salary</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -22,8 +22,8 @@
             <tr id="user-row-{{ $user->id }}">
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->phone }}</td>
-                <td>{{ $user->email }}</td>
                 <td>{{ $user->address }}</td>
+                <td>{{ $user->basic_salary }}</td>
                 <td>
 {{--
                     <a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm">View</a>
