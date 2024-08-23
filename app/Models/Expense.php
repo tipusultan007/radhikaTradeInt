@@ -17,6 +17,9 @@ class Expense extends Model
         'date'
     ];
 
+    protected $casts = [
+        'date' => 'date'
+    ];
     public function account()
     {
         return $this->belongsTo(Account::class);

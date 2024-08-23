@@ -31,6 +31,7 @@
                         <td>{{ $account->code }}</td>
                         <td>{{ number_format($account->opening_balance, 2) }}</td>
                         <td>
+                            <a href="{{ route('accounts.show', $account->id) }}" class="btn btn-primary btn-sm">View</a>
                             <a href="{{ route('accounts.edit', $account->id) }}" class="btn btn-warning btn-sm">Edit</a>
                             <form action="{{ route('accounts.destroy', $account->id) }}" method="POST" style="display:inline;">
                                 @csrf

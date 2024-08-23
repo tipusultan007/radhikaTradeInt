@@ -25,6 +25,7 @@ return new class extends Migration
             $table->decimal('paid_amount', 8, 2)->default(0)->nullable();
             $table->date('date');
             $table->string('note')->nullable();
+            $table->text('payment_details')->nullable();
             $table->timestamps();
         });
     }

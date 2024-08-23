@@ -31,7 +31,35 @@
                             <td>{{ $customer->name }}</td>
                             <td>{{ $customer->phone }}</td>
                             <td>{{ $customer->address }}</td>
-                            <td>{{ $customer->type }}</td>
+                            <td>
+                                @php
+                                    $badgeClass = '';
+                                    switch($customer->type) {
+                                        case 'dealer':
+                                            $badgeClass = 'badge-primary';
+                                            break;
+                                        case 'commission_agent':
+                                            $badgeClass = 'badge-success';
+                                            break;
+                                        case 'retailer':
+                                            $badgeClass = 'badge-info';
+                                            break;
+                                        case 'wholesale':
+                                            $badgeClass = 'badge-warning';
+                                            break;
+                                        case 'retail':
+                                            $badgeClass = 'badge-secondary';
+                                            break;
+                                        case 'customer':
+                                            $badgeClass = 'badge-dark';
+                                            break;
+                                        default:
+                                            $badgeClass = 'badge-light';
+                                            break;
+                                    }
+                                @endphp
+                                <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $customer->type)) }}</span>
+                            </td>
                             <td>
                                 <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-warning btn-icon btn-sm">
                                     <i class="fas fa-edit"></i>

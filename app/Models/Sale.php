@@ -20,9 +20,17 @@ class Sale extends Model
         'referrer_id',
         'total',
         'note',
-        'date'
+        'date',
+        'payment_details'
     ];
 
+    protected $casts = [
+        'date' => 'date',
+    ];
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
+    }
     public function customer()
     {
         return $this->belongsTo(Customer::class);

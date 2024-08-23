@@ -111,6 +111,12 @@
                             </select>
                         </td>
                     </tr>
+                    <tr class="payment-details" style="display: none">
+                        <th>Payment Details</th>
+                        <td>
+                            <input type="text" name="payment_details" placeholder="Write payment details..." class="form-control mb-1">
+                        </td>
+                    </tr>
                     <tr>
                         <td colspan="2">
                             <div class="d-flex justify-content-end">
@@ -236,7 +242,17 @@
                 $('#referrer_id').val(null).trigger('change');
             }
         });
+        $('#account_id').on('change', function() {
+            var selectedId = $('#account_id option:selected').val();
 
+            if (selectedId > 0) {
+                $('.payment-details').show();
+                $('input[name=payment_details]').val('');
+            } else {
+                $('.payment-details').hide();
+                $('input[name=payment_details]').val('');
+            }
+        });
         // Trigger change event on page load to ensure correct initial state
         $('#customer_id').trigger('change');
 

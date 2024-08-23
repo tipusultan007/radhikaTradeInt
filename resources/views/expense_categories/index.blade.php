@@ -44,6 +44,7 @@
                         <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Total Expense</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -51,8 +52,10 @@
                         @foreach($categories as $category)
                             <tr>
                                 <td>{{ $category->name }}</td>
+                                <td>{{ number_format($category->total_expense, 2) }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
+                                        <a class="btn btn-primary" href="{{ route('expense_categories.show', $category->id) }}">Show</a>
                                         <a class="btn btn-secondary" href="{{ route('expense_categories.edit', $category->id) }}">Edit</a>
                                         <form action="{{ route('expense_categories.destroy', $category->id) }}" method="POST">
                                             @csrf
@@ -65,6 +68,7 @@
                         @endforeach
                         </tbody>
                     </table>
+
                 </div>
             </div>
         </div>

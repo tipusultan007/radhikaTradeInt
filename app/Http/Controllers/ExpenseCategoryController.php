@@ -10,9 +10,29 @@ class ExpenseCategoryController extends Controller
 {
     public function index()
     {
-        $categories = ExpenseCategory::with('parent')->get();
+        $categories = ExpenseCategory::with('expenses')
+            ->get()
+            ->map(function ($category) {
+                $category->total_expense = $category->expenses->sum('amount');
+                return $category;
+            });
+
         return view('expense_categories.index', compact('categories'));
     }
+
+    public function show($id)
+    {
+        $expenseCategory = ExpenseCategory::with('expenses')->findOrFail($id);
+
+        // Calculate total expense for the category
+        $totalExpense = $expenseCategory->expenses->sum('amount');
+
+        // Paginate the expenses (you can set the number of items per page, e.g., 10)
+        $expenses = $expenseCategory->expenses()->orderBy('date', 'desc')->paginate(10);
+
+        return view('expense_categories.show', compact('expenseCategory', 'totalExpense', 'expenses'));
+    }
+
 
     public function create()
     {

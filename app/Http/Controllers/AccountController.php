@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\JournalEntryLineItem;
 use Illuminate\Http\Request;
 
 class AccountController extends Controller
@@ -13,6 +14,38 @@ class AccountController extends Controller
         $accounts = Account::all();
         return view('accounts.index', compact('accounts'));
     }
+
+    public function show(Request $request, $id)
+    {
+        $account = Account::findOrFail($id);
+
+        // Retrieve the date range filter values from the request
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        // Base query for journal entry line items
+        $journalEntryLineItemsQuery = JournalEntryLineItem::where('account_id', $account->id)
+            ->join('journal_entries', 'journal_entry_line_items.journal_entry_id', '=', 'journal_entries.id')
+            ->orderBy('journal_entries.date', 'desc')
+            ->select('journal_entry_line_items.*')
+            ->with('journalEntry');
+
+        // Apply date range filter if both start and end dates are provided
+        if ($startDate && $endDate) {
+            $journalEntryLineItemsQuery->whereBetween('journal_entries.date', [$startDate, $endDate]);
+        }
+
+        // Calculate totals
+        $totalDebit = $journalEntryLineItemsQuery->sum('debit');
+        $totalCredit = $journalEntryLineItemsQuery->sum('credit');
+
+        // Paginate the results
+        $journalEntryLineItems = $journalEntryLineItemsQuery->paginate(15);
+
+        return view('accounts.show', compact('account', 'journalEntryLineItems', 'totalDebit', 'totalCredit', 'startDate', 'endDate'));
+    }
+
+
 
     // Show the form for creating a new account
     public function create()
