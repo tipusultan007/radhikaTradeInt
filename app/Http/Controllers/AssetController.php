@@ -107,14 +107,13 @@ class AssetController extends Controller
             $journalEntry = $asset->journalEntry;
 
             if ($journalEntry) {
-                $journalEntry->lineItems()->where('account_id', $asset->account_id)->update([
+                $journalEntry->lineItems()->where('debit','>', 0)->update([
                     'debit' => $asset->value,
-                    'date' => $asset->purchase_date,
                 ]);
 
-                $journalEntry->lineItems()->where('account_id', $asset->account_id)->update([
+                $journalEntry->lineItems()->where('credit','>', 0)->update([
                     'credit' => $asset->value,
-                    'date' => $asset->purchase_date,
+                    'account_id' => $asset->account_id,
                 ]);
             }
 

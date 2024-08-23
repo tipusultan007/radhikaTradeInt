@@ -26,7 +26,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index']);
     Route::get('/', [HomeController::class, 'index']);
 });
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
     Route::resource('accounts', AccountController::class);
     Route::resource('customers', CustomerController::class);
     Route::resource('products', ProductController::class);
