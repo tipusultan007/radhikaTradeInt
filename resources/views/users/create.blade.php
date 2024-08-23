@@ -52,6 +52,14 @@
                         <label for="password_confirmation">Confirm Password</label>
                         <input type="password" name="password_confirmation" class="form-control" required>
                     </div>
+                    <div class="col-md-3 form-group">
+                        <label for="roles">Assign Roles</label>
+                        <select multiple class="form-control select2" id="roles" name="roles[]">
+                            @foreach($roles as $role)
+                                <option value="{{ $role->id }}">{{ $role->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="col-md-3 form-group d-flex align-items-end">
                         <button type="submit" class="btn btn-success">Create User</button>
@@ -61,4 +69,12 @@
             </form>
         </div>
     </div>
+@endsection
+@section('js')
+    <script>
+        $(".select2").select2({
+            theme: 'bootstrap',
+            width: '100%'
+        })
+    </script>
 @endsection

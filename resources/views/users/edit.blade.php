@@ -55,6 +55,16 @@
                         <input type="password" name="password_confirmation" class="form-control">
                     </div>
 
+                    <div class="col-md-4 form-group">
+                        <label for="roles">Assign Roles</label>
+                        <select multiple class="form-control select2" id="roles" name="roles[]">
+                            @foreach($roles as $role)
+                                <option value="{{ $role->id }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>
+                                    {{ $role->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="col-md-12 form-group">
                         <button type="submit" class="btn btn-success">Update User</button>
                     </div>
@@ -63,4 +73,12 @@
             </form>
         </div>
     </div>
+@endsection
+@section('js')
+    <script>
+        $(".select2").select2({
+            theme: 'bootstrap',
+            width: '100%'
+        })
+    </script>
 @endsection

@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PackagingTypesTableSeeder::class,
             CustomersTableSeeder::class,
             UsersTableSeeder::class,
+            RoleSeeder::class,
         ]);
     }
 }

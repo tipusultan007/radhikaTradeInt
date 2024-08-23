@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SalaryIncrement;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -12,13 +13,15 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
+
         return view('users.index', compact('users'));
     }
 
     // Show the form for creating a new user
     public function create()
     {
-        return view('users.create');
+        $roles = Role::all();
+        return view('users.create',compact('roles'));
     }
 
     // Store a newly created user in storage
@@ -31,7 +34,7 @@ class UserController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        User::create([
+       $user =  User::create([
             'name' => $request->name,
             'phone' => $request->phone,
             'address' => $request->address,
@@ -39,7 +42,10 @@ class UserController extends Controller
             'basic_salary' => $request->basic_salary,
             'password' => bcrypt($request->password),
         ]);
-
+        // Assign roles to the user
+        if ($request->has('roles')) {
+            $user->syncRoles($request->input('roles'));
+        }
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
@@ -52,7 +58,8 @@ class UserController extends Controller
     // Show the form for editing the specified user
     public function edit(User $user)
     {
-        return view('users.edit', compact('user'));
+        $roles = Role::all();
+        return view('users.edit', compact('user','roles'));
     }
 
     // Update the specified user in storage
@@ -73,6 +80,11 @@ class UserController extends Controller
             'basic_salary' => $request->basic_salary,
             'password' => $request->password ? bcrypt($request->password) : $user->password,
         ]);
+
+        // Sync roles
+        if ($request->has('roles')) {
+            $user->syncRoles($request->input('roles'));
+        }
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }

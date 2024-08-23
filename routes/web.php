@@ -9,8 +9,10 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryIncrementController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\UserController;
@@ -41,7 +43,21 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/salary-increments', [SalaryIncrementController::class, 'store'])->name('salary-increments.store');
     Route::get('/balance-sheet', [BalanceSheetController::class, 'show'])->name('balance_sheet.show');
 
+//    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+//    Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+//    Route::post('/roles/store', [RoleController::class, 'store'])->name('roles.store');
+//    Route::get('/roles/{id}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+//    Route::post('/roles/{id}/update', [RoleController::class, 'update'])->name('roles.update');
+//    Route::delete('/roles/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
 
+    Route::resource('roles', RoleController::class);
 
+    Route::get('/roles/{id}/edit-permissions', [RoleController::class, 'editPermissions'])->name('roles.edit-permissions');
+    Route::post('/roles/{id}/update-permissions', [RoleController::class, 'updatePermissions'])->name('roles.update-permissions');
+
+    Route::resource('permissions', PermissionController::class);
+    //Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
+    //Route::post('/permissions/store', [PermissionController::class, 'store'])->name('permissions.store');
+    //Route::post('/permissions/assign', [PermissionController::class, 'assignPermissions'])->name('permissions.assign');
 });
 
