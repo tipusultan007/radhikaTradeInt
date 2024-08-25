@@ -16,7 +16,7 @@
                         <div class="row">
                             <div class="col-md-12 form-group">
                                 <label for="parent_id">Parent Category</label>
-                                <select name="parent_id" class="form-control">
+                                <select name="parent_id" class="form-control select2">
                                     <option value="">No Parent</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" {{ old('parent_id', $expenseCategory->parent_id ?? '') == $category->id ? 'selected' : '' }}>
@@ -44,25 +44,32 @@
                         <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Total Expense</th>
-                            <th>Actions</th>
+                            <th class="text-center">Total Expense</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($categories as $category)
                             <tr>
                                 <td>{{ $category->name }}</td>
-                                <td>{{ number_format($category->total_expense, 2) }}</td>
+                                <td class="text-end">{{ number_format($category->total_expense, 2) }}</td>
                                 <td>
-                                    <div class="d-flex gap-2">
-                                        <a class="btn btn-primary" href="{{ route('expense_categories.show', $category->id) }}">Show</a>
-                                        <a class="btn btn-secondary" href="{{ route('expense_categories.edit', $category->id) }}">Edit</a>
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a class="btn btn-sm btn-primary" href="{{ route('expense_categories.show', $category->id) }}">
+                                            <i class="fas fa-eye"></i> Show
+                                        </a>
+                                        <a class="btn btn-sm btn-secondary" href="{{ route('expense_categories.edit', $category->id) }}">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
                                         <form action="{{ route('expense_categories.destroy', $category->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
                                         </form>
                                     </div>
+
                                 </td>
                             </tr>
                         @endforeach
@@ -75,4 +82,12 @@
     </div>
 
 
+@endsection
+@section('js')
+    <script>
+        $(".select2").select2({
+            theme: 'bootstrap',
+            width: '100%'
+        })
+    </script>
 @endsection
