@@ -82,11 +82,27 @@
                         <p>Assets</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('payroll.index') }}">
-                        <i class="fas fa-cart-arrow-down"></i>
-                        <p>Payroll</p>
+
+                <li class="nav-item submenu">
+                    <a data-bs-toggle="collapse" href="#Salary">
+                        <i class="fas fa-money-check"></i>
+                        <p>Salary Management</p>
+                        <span class="caret"></span>
                     </a>
+                    <div class="collapse" id="Salary">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('payroll.index') }}">
+                                    <span class="sub-item">Salary List</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('advance_salary.index') }}">
+                                    <span class="sub-item">Advance Salary</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
                 <li class="nav-item submenu">
                     <a data-bs-toggle="collapse" href="#Accounting">
