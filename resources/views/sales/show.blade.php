@@ -90,23 +90,19 @@
                             @endif
                         </div>
                         <div class="col-sm-5 col-md-7 transfer-total">
-                            <div class="account-transfer">
-                                <div><span>Subtotal:</span><span>{{ $sale->subtotal }}</span></div>
-                            </div>
                             <h5 class="sub">Total Amount</h5>
-                            <div class="price">$685.99</div>
-                            <span>Taxes Included</span>
+                            <div class="price">{{ $sale->total }}</div>
                         </div>
                     </div>
                     <div class="separator-solid"></div>
-                   @if($sale->note != '')
-                        <h6 class="text-uppercase mt-4 mb-3 fw-bold">
-                            Notes
-                        </h6>
-                        <p class="text-muted mb-0">
-                            {{ $sale->note }}
-                        </p>
-                   @endif
+                    @if($sale->note !='')
+                    <h6 class="text-uppercase mt-4 mb-3 fw-bold">
+                        Notes
+                    </h6>
+                    <p class="text-muted mb-0">
+{{ $sale->note }}
+                    </p>
+                    @endif
                 </div>
             </div>
         </div>

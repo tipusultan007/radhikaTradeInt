@@ -11,13 +11,25 @@ use Illuminate\Support\Facades\DB;
 
 class ExpenseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $categories = ExpenseCategory::all();
-        $accounts = Account::all();
-        $expenses = Expense::with('expenseCategory', 'account', 'journalEntry')->orderByDesc('date')->paginate(10);
-        return view('expenses.index', compact('expenses','accounts','categories'));
+        $accounts = Account::where('type','asset')->get();
+        $query = Expense::query();
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('date', [$request->start_date, $request->end_date]);
+        }
+
+        if ($request->filled('expense_category_id') && $request->expense_category_id != '') {
+            $query->where('expense_category_id', $request->expense_category_id);
+        }
+
+        $expenses = $query->orderByDesc('date')->paginate(10);
+
+        return view('expenses.index', compact('expenses', 'categories','accounts'));
     }
+
 
     public function create()
     {
