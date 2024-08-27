@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AdvanceSalaryController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\BalanceSheetController;
 use App\Http\Controllers\CustomerController;
@@ -59,5 +60,9 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
     //Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
     //Route::post('/permissions/store', [PermissionController::class, 'store'])->name('permissions.store');
     //Route::post('/permissions/assign', [PermissionController::class, 'assignPermissions'])->name('permissions.assign');
+
+    Route::resource('advance_salary', AdvanceSalaryController::class);
+
+    Route::get('getSalary',[PayrollController::class,'getSalary'])->name('get.salary');
 });
 

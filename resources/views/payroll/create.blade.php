@@ -20,11 +20,16 @@
                 @csrf
                 <div class="row">
                     <div class="col-md-4 form-group">
+                        <label for="month">Month</label>
+                        <input type="month" name="month" id="month" class="form-control" value="{{ old('month') }}" required>
+                    </div>
+
+                    <div class="col-md-4 form-group">
                         <label for="user_id">User</label>
                         <select name="user_id" id="user_id" class="select2" required>
                             <option value="">Select a user</option>
                             @forelse($users as $user)
-                                <option data-salary="{{ $user->getLastIncrementedSalary() }}" value="{{ $user->id }}" {{ old('user_id') === $user->id?'selected': '' }}>{{ $user->name }}</option>
+                                <option value="{{ $user->id }}" {{ old('user_id') === $user->id?'selected': '' }}>{{ $user->name }}</option>
                             @empty
                                 <option value="">No users available</option>
                             @endforelse
@@ -45,7 +50,10 @@
                         <label for="deductions">Deductions</label>
                         <input type="number" name="deductions" id="deductions" class="form-control" value="{{ old('deductions', 0) }}">
                     </div>
-
+                    <div class="col-md-4 form-group">
+                        <label for="advance">Advanced</label>
+                        <input type="number" name="advance" id="advance" class="form-control" value="{{ old('advance', 0) }}" readonly>
+                    </div>
                     <div class="col-md-4 form-group">
                         <label for="total">Total Salary</label>
                         <input type="text" id="total" class="form-control" name="total" value="{{ old('total') }}" readonly>
@@ -69,11 +77,6 @@
                         <input type="text" name="pay_date" id="pay_date" class="form-control flatpickr" value="{{ old('pay_date') }}" required>
                     </div>
 
-                    <div class="col-md-4 form-group">
-                        <label for="month">Month</label>
-                        <input type="month" name="month" id="month" class="form-control" value="{{ old('month') }}" required>
-                    </div>
-
                     <div class="col-md-4 form-group d-flex align-items-end">
                         <button type="submit" class="btn btn-primary mt-3">Submit Payroll</button>
                     </div>
@@ -81,49 +84,76 @@
             </form>
         </div>
     </div>
-    @section('js')
-        <script>
-            $(".select2").select2({
-                theme:'bootstrap',
-                width: '100%'
-            })
-            const $userSelect = $('#user_id');
-            const $salaryInput = $('#salary');
-            const $bonusInput = $('#bonus');
-            const $deductionsInput = $('#deductions');
-            const $totalInput = $('#total');
+@endsection
+@section('js')
+    <script>
+        $(".select2").select2({
+            theme: 'bootstrap',
+            width: '100%'
+        });
 
-            $userSelect.on('change', function() {
-                const salary = parseFloat($('option:selected', this).data('salary'));
+        const $userSelect = $('#user_id');
+        const $monthInput = $('#month');
+        const $salaryInput = $('#salary');
+        const $advanceInput = $('#advance');
+        const $bonusInput = $('#bonus');
+        const $deductionsInput = $('#deductions');
+        const $totalInput = $('#total');
 
-                // Set the Basic Salary input to the selected user's salary
-                $salaryInput.val(salary ? salary : '');
+        function getSalaryAndAdvance() {
+            const userId = $userSelect.val();
+            const month = $monthInput.val();
 
-                // Update total salary when user changes
-                updateTotal(salary);
-            });
+            if (userId && month) {
+                $.ajax({
+                    url: '{{ route('get.salary') }}', // Update with your route for getting salary
+                    method: 'GET',
+                    data: {
+                        user_id: userId,
+                        month: month
+                    },
+                    success: function(response) {
+                        $salaryInput.val(response.salary);
+                        $advanceInput.val(response.advance);
+                        $totalInput.val(response.salary); // Initialize total with salary
 
-            // Update total salary on bonus or deductions input change
-            $bonusInput.on('input', function() {
-                const salary = parseFloat($salaryInput.val()) || 0;
-                const bonus = parseFloat($(this).val()) || 0;
-                const deductions = parseFloat($deductionsInput.val()) || 0;
-
-                updateTotal(salary, bonus, deductions);
-            });
-
-            $deductionsInput.on('input', function() {
-                const salary = parseFloat($salaryInput.val()) || 0;
-                const bonus = parseFloat($bonusInput.val()) || 0;
-                const deductions = parseFloat($(this).val()) || 0;
-
-                updateTotal(salary, bonus, deductions);
-            });
-
-            function updateTotal(salary, bonus = 0, deductions = 0) {
-                const total = salary + bonus - deductions;
-                $totalInput.val(total.toFixed(2)); // Format to two decimal places
+                        // Calculate total with current bonus and deductions
+                        updateTotal(response.salary,0,0,response.advance);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                        alert('Error fetching salary information. Please try again.');
+                    }
+                });
             }
-        </script>
-    @endsection
+        }
+
+        $userSelect.on('change', getSalaryAndAdvance);
+        $monthInput.on('change', getSalaryAndAdvance);
+
+        // Update total salary on bonus or deductions input change
+        $bonusInput.on('input', function() {
+            const salary = parseFloat($salaryInput.val()) || 0;
+            const bonus = parseFloat($(this).val()) || 0;
+            const deductions = parseFloat($deductionsInput.val()) || 0;
+            const advance = parseFloat($advanceInput.val()) || 0;
+
+            updateTotal(salary, bonus, deductions, advance);
+        });
+
+        $deductionsInput.on('input', function() {
+            const salary = parseFloat($salaryInput.val()) || 0;
+            const bonus = parseFloat($bonusInput.val()) || 0;
+            const deductions = parseFloat($(this).val()) || 0;
+            const advance = parseFloat($advanceInput.val()) || 0;
+
+            updateTotal(salary, bonus, deductions, advance);
+        });
+
+        function updateTotal(salary, bonus = 0, deductions = 0, advance = 0) {
+            const total = salary + bonus - deductions - advance;
+            $totalInput.val(total.toFixed(2)); // Format to two decimal places
+        }
+    </script>
+
 @endsection

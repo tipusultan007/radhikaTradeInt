@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdvanceSalary;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLineItem;
 use App\Models\User;
@@ -43,12 +44,17 @@ class PayrollController extends Controller
                 ->with('error', 'This user has already been paid for this month.');
         }
 
+        // Calculate the total advance salary for the specified month
+        $totalAdvanceSalary = AdvanceSalary::where('user_id', $user->id)
+            ->where('month', $request->input('month'))
+            ->sum('amount');
+
         DB::beginTransaction();
         try {
             // Calculate net pay
             $bonus = $request->input('bonus', 0);
             $deductions = $request->input('deductions', 0);
-            $netPay = $basicSalary + $bonus - $deductions;
+            $netPay = $basicSalary + $bonus - $deductions - $totalAdvanceSalary;
 
             // Create the payroll entry
             $payroll = new Payroll([
@@ -64,6 +70,7 @@ class PayrollController extends Controller
 
             $payroll->save();
 
+            // Create a journal entry
             $journalEntry = JournalEntry::create([
                 'journalable_type' => Payroll::class,
                 'journalable_id' => $payroll->id,
@@ -75,7 +82,7 @@ class PayrollController extends Controller
             // Add line item to debit the Asset account
             JournalEntryLineItem::create([
                 'journal_entry_id' => $journalEntry->id,
-                'account_id' => 8,
+                'account_id' => 8, // Assuming 8 is the Asset account ID
                 'debit' => $payroll->net_pay,
                 'credit' => 0,
             ]);
@@ -96,6 +103,7 @@ class PayrollController extends Controller
             return redirect()->route('payroll.create')->with('error', $exception->getMessage());
         }
     }
+
 
     public function index()
     {
@@ -125,36 +133,46 @@ class PayrollController extends Controller
             'account_id' => 'required',
         ]);
 
-        // Find the existing payroll entry
+        // Find the payroll entry by ID
         $payroll = Payroll::findOrFail($id);
 
-        // Ensure the payroll month matches the original
-        if ($payroll->month !== $request->input('month')) {
-            return redirect()->route('payroll.edit', $id)
-                ->with('error', 'You cannot change the payroll month.');
+        // Check if the user has already been paid for the given month and it's not the current payroll entry
+        $existingPayroll = Payroll::where('user_id', $payroll->user_id)
+            ->where('month', $request->input('month'))
+            ->where('id', '!=', $id)
+            ->first();
+
+        if ($existingPayroll) {
+            return redirect()->route('payroll.edit', $payroll->id)
+                ->with('error', 'This user has already been paid for this month.');
         }
+
+        // Get the user associated with the payroll
+        $user = $payroll->user;
+        $basicSalary = $user->getLastIncrementedSalary();
+
+        // Calculate the total advance salary for the specified month
+        $totalAdvanceSalary = AdvanceSalary::where('user_id', $user->id)
+            ->where('month', $request->input('month'))
+            ->sum('amount');
 
         DB::beginTransaction();
 
         try {
-            // Get the user
-            $user = User::findOrFail($request->input('user_id'));
-            $basicSalary = $user->getLastIncrementedSalary();
-
             // Calculate net pay
             $bonus = $request->input('bonus', 0);
             $deductions = $request->input('deductions', 0);
-            $netPay = $basicSalary + $bonus - $deductions;
+            $netPay = $basicSalary + $bonus - $deductions - $totalAdvanceSalary;
 
             // Update the payroll entry
             $payroll->update([
-                'user_id' => $request->input('user_id'),
-                'account_id' => $request->input('account_id'),
+                'account_id' => $request->input('account_id', $payroll->account_id),
                 'salary' => $basicSalary,
                 'bonus' => $bonus,
                 'deductions' => $deductions,
                 'net_pay' => $netPay,
                 'pay_date' => $request->input('pay_date'),
+                'month' => $request->input('month'),
             ]);
 
             // Update the associated journal entry
@@ -225,6 +243,73 @@ class PayrollController extends Controller
             return redirect()->route('payroll.index')->with('error', $exception->getMessage());
         }
 
+    }
+
+    public function storeAdvanceSalary(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:0',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            // Create the advance salary entry
+            $advanceSalary = new AdvanceSalary([
+                'user_id' => $request->input('user_id'),
+                'amount' => $request->input('amount'),
+                'taken_on' => now(),
+                'month' => $request->input('month'),
+            ]);
+
+            $advanceSalary->save();
+
+            // Create a journal entry for the advance salary
+            $journalEntry = JournalEntry::create([
+                'journalable_type' => AdvanceSalary::class,
+                'journalable_id' => $advanceSalary->id,
+                'type' => 'advance_salary',
+                'date' => now(),
+                'description' => 'Advance salary taken by ' . $advanceSalary->user->name,
+            ]);
+
+            // Add line item to credit the Liability account (e.g., Salary Payable)
+            JournalEntryLineItem::create([
+                'journal_entry_id' => $journalEntry->id,
+                'account_id' => 8, // Assuming 9 is the Salary Payable account ID
+                'debit' => $advanceSalary->amount,
+                'credit' => 0,
+            ]);
+
+            // Add line item to debit the Asset account (e.g., Cash/Bank)
+            JournalEntryLineItem::create([
+                'journal_entry_id' => $journalEntry->id,
+                'account_id' => $request->input('account_id'), // Assuming 8 is the Cash/Bank account ID
+                'debit' => 0,
+                'credit' => $advanceSalary->amount,
+            ]);
+
+
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Advance salary recorded successfully!');
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error recording advance salary: ' . $exception->getMessage());
+        }
+    }
+
+    public function getSalary(Request $request)
+    {
+        $user = User::find($request->input('user_id'));
+
+        $totalAdvanceSalary = AdvanceSalary::where('user_id', $user->id)
+            ->where('month', $request->input('month'))
+            ->sum('amount');
+        $data['salary'] = $user->getLastIncrementedSalary();
+        $data['advance'] = $totalAdvanceSalary;
+        return response()->json($data);
     }
 
 }

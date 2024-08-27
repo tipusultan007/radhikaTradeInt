@@ -10,7 +10,7 @@
         </div>
     @endif
 
-    <table class="table table-striped">
+    <table class="table table-striped table-bordered">
         <thead>
         <tr>
             <th>User Name</th>
@@ -18,6 +18,7 @@
             <th>Salary</th>
             <th>Bonus</th>
             <th>Deductions</th>
+            <th>Advance</th>
             <th>Net Pay</th>
             <th>Pay Date</th>
             <th>Actions</th>
@@ -31,6 +32,7 @@
                 <td class="text-left">{{ $payroll->salary }}</td>
                 <td class="text-left">{{ $payroll->bonus }}</td>
                 <td class="text-left">{{ $payroll->deductions }}</td>
+                <td class="text-left">{{ $payroll->advance }}</td>
                 <td class="text-left">{{ $payroll->net_pay }}</td>
                 <td class="text-left">{{ \Carbon\Carbon::parse($payroll->pay_date)->format('d/m/Y') }}</td>
                 <td class="text-right">

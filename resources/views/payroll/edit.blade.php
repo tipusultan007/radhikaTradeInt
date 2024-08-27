@@ -26,16 +26,8 @@
                 <div class="row">
                     <div class="col-md-4 form-group">
                         <label for="user_id">User</label>
-                        <select name="user_id" id="user_id" class="select2" required>
-                            <option value="">Select a user</option>
-                            @foreach($users as $user)
-                                <option data-salary="{{ $user->getLastIncrementedSalary() }}"
-                                        value="{{ $user->id }}"
-                                    {{ $payroll->user_id == $user->id ? 'selected' : '' }}>
-                                    {{ $user->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <input type="text"  class="form-control" value="{{ $payroll->user->name }}" readonly>
+                        <input type="hidden" name="user_id" value="{{ $payroll->user_id }}">
                     </div>
 
                     <div class="col-md-4 form-group">
@@ -52,7 +44,10 @@
                         <label for="deductions">Deductions</label>
                         <input type="number" name="deductions" id="deductions" class="form-control" value="{{ old('deductions', $payroll->deductions) }}">
                     </div>
-
+                    <div class="col-md-4 form-group">
+                        <label for="advance">Advanced</label>
+                        <input type="number" name="advance" id="advance" class="form-control" value="{{ old('advance', $payroll->advance) }}" readonly>
+                    </div>
                     <div class="col-md-4 form-group">
                         <label for="total">Total Salary</label>
                         <input type="text" id="total" class="form-control" value="{{ $payroll->net_pay }}" readonly>
@@ -99,41 +94,34 @@
             const $userSelect = $('#user_id');
             const $salaryInput = $('#salary');
             const $bonusInput = $('#bonus');
+            const $advanceInput = $('#advance');
             const $deductionsInput = $('#deductions');
             const $totalInput = $('#total');
 
-            $userSelect.on('change', function() {
-                const salary = parseFloat($('option:selected', this).data('salary'));
-
-                // Set the Basic Salary input to the selected user's salary
-                $salaryInput.val(salary ? salary : '');
-
-                // Update total salary when user changes
-                updateTotal(salary);
-            });
-
             // Set the initial total salary
-            updateTotal(parseFloat($salaryInput.val()));
+            //updateTotal(parseFloat($salaryInput.val()));
 
             // Update total salary on bonus or deductions input change
             $bonusInput.on('input', function() {
                 const salary = parseFloat($salaryInput.val()) || 0;
                 const bonus = parseFloat($(this).val()) || 0;
                 const deductions = parseFloat($deductionsInput.val()) || 0;
+                const advance = parseFloat($advanceInput.val()) || 0;
 
-                updateTotal(salary, bonus, deductions);
+                updateTotal(salary, bonus, deductions, advance);
             });
 
             $deductionsInput.on('input', function() {
                 const salary = parseFloat($salaryInput.val()) || 0;
                 const bonus = parseFloat($bonusInput.val()) || 0;
                 const deductions = parseFloat($(this).val()) || 0;
+                const advance = parseFloat($advanceInput.val()) || 0;
 
-                updateTotal(salary, bonus, deductions);
+                updateTotal(salary, bonus, deductions, advance);
             });
 
-            function updateTotal(salary, bonus = 0, deductions = 0) {
-                const total = salary + bonus - deductions;
+            function updateTotal(salary, bonus = 0, deductions = 0, advance = 0) {
+                const total = salary + bonus - deductions - advance;
                 $totalInput.val(total.toFixed(2)); // Format to two decimal places
             }
         });

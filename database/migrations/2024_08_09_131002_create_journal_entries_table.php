@@ -24,7 +24,8 @@ return new class extends Migration
                 'income',
                 'asset',
                 'opening_balance',
-                'salary'
+                'salary',
+                'advance_salary',
             ])->nullable();
             $table->date('date');
             $table->string('description')->nullable();

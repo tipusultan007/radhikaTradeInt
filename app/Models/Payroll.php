@@ -15,6 +15,7 @@ class Payroll extends Model
         'account_id',
         'bonus',
         'deductions',
+        'advance',
         'net_pay',
         'pay_date',
         'month',
@@ -38,4 +39,28 @@ class Payroll extends Model
     {
         return $this->morphOne(JournalEntry::class, 'journalable');
     }
+
+    public function advanceSalaries()
+    {
+        return $this->hasMany(AdvanceSalary::class, 'user_id', 'user_id');
+    }
+
+    public function getTotalAdvanceSalaryAttribute()
+    {
+        return $this->advanceSalaries()
+            ->where('month', $this->month)
+            ->sum('amount');
+    }
+
+    public function calculateNetPay()
+    {
+        $salary = $this->salary;
+        $bonus = $this->bonus ?? 0;
+        $deductions = $this->deductions ?? 0;
+        $totalAdvanceSalary = $this->total_advance_salary;
+
+        $this->net_pay = $salary + $bonus - $deductions - $totalAdvanceSalary;
+    }
+
+
 }

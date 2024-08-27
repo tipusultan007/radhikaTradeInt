@@ -70,4 +70,16 @@ class User extends Authenticatable
         return $this->hasMany(Payroll::class);
     }
 
+    public function advanceSalaries()
+    {
+        return $this->hasMany(AdvanceSalary::class);
+    }
+
+    public function getTotalAdvanceSalaryAttribute()
+    {
+        return $this->advanceSalaries()
+            ->where('month', $this->month)
+            ->sum('amount');
+    }
+
 }

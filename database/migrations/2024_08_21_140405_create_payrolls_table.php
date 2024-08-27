@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('salary', 10, 2);
             $table->decimal('bonus', 10, 2)->nullable();
             $table->decimal('deductions', 10, 2)->nullable();
+            $table->decimal('advance', 10, 2)->nullable();
             $table->decimal('net_pay', 10, 2);
             $table->string('month');
             $table->date('pay_date');
