@@ -14,7 +14,7 @@ class ExpenseController extends Controller
     public function index(Request $request)
     {
         $categories = ExpenseCategory::all();
-        $accounts = Account::all();
+        $accounts = Account::where('type','asset')->get();
         $query = Expense::query();
 
         if ($request->filled('start_date') && $request->filled('end_date')) {

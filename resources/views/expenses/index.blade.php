@@ -155,7 +155,7 @@
 
                             <div class="form-group col-md-6">
                                 <label for="expense_category_id" class="form-label">Category:</label>
-                                <select name="expense_category_id"  class="form-select" required
+                                <select name="expense_category_id"  class="form-select category" required
                                         data-placeholder="-- Select --">
                                     <option value=""></option>
                                     @foreach($categories as $category)
@@ -196,8 +196,19 @@
 @endsection
 @section('js')
     <script>
-        $("select").select2({
+        $(".category,#account_id").select2({
             dropdownParent: $("#expenseModal"),
+            theme: "bootstrap",
+            width: "100%",
+            placeholder: '--Select Category--'
+        });
+        $("#expense_category_id").select2({
+            theme: "bootstrap",
+            width: "100%",
+            placeholder: '--Select Category--'
+        });
+        /*$(".category").select2({
+            dropdownParent: "#expenseModal",
             theme: "bootstrap",
             width: "100%",
             placeholder: '--Select Category--'
@@ -207,6 +218,6 @@
             theme: "bootstrap",
             width: "100%",
             placeholder: '--Select Category--'
-        });
+        });*/
     </script>
 @endsection
