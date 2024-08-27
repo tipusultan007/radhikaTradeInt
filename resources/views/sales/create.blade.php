@@ -235,7 +235,7 @@
         $('#customer_id').on('change', function() {
             var selectedType = $('#customer_id option:selected').data('type');
 
-            if (selectedType === 'customer') {
+            if (selectedType === 'customer' || selectedType === 'commission_agent') {
                 $('.referrer').show();
             } else {
                 $('.referrer').hide();
