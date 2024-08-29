@@ -167,5 +167,6 @@ class AdvanceSalaryController extends Controller
             return redirect()->back()->with('error', 'Error deleting advance salary: ' . $exception->getMessage());
         }
     }
+    
 }
 

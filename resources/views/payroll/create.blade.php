@@ -14,76 +14,94 @@
             {{ session('error') }}
         </div>
     @endif
-    <div class="card">
-        <div class="card-body">
-            <form action="{{ route('payroll.store') }}" method="POST">
-                @csrf
-                <div class="row">
-                    <div class="col-md-4 form-group">
-                        <label for="month">Month</label>
-                        <input type="month" name="month" id="month" class="form-control" value="{{ old('month') }}" required>
-                    </div>
 
-                    <div class="col-md-4 form-group">
-                        <label for="user_id">User</label>
-                        <select name="user_id" id="user_id" class="select2" required>
-                            <option value="">Select a user</option>
-                            @forelse($users as $user)
-                                <option value="{{ $user->id }}" {{ old('user_id') === $user->id?'selected': '' }}>{{ $user->name }}</option>
-                            @empty
-                                <option value="">No users available</option>
-                            @endforelse
-                        </select>
-                    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form action="{{ route('payroll.store') }}" method="POST">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label for="month">Month</label>
+                                <input type="month" name="month" id="month" class="form-control" value="{{ old('month') }}" required>
+                            </div>
 
-                    <div class="col-md-4 form-group">
-                        <label for="salary">Basic Salary</label>
-                        <input type="text" id="salary" name="salary" class="form-control" value="{{ old('salary') }}" readonly>
-                    </div>
+                            <div class="col-md-4 form-group">
+                                <label for="user_id">User</label>
+                                <select name="user_id" id="user_id" class="select2" required>
+                                    <option value="">Select a user</option>
+                                    @forelse($users as $user)
+                                        <option value="{{ $user->id }}" {{ old('user_id') === $user->id?'selected': '' }}>{{ $user->name }}</option>
+                                    @empty
+                                        <option value="">No users available</option>
+                                    @endforelse
+                                </select>
+                            </div>
 
-                    <div class="col-md-4 form-group">
-                        <label for="bonus">Bonus</label>
-                        <input type="number" name="bonus" id="bonus" class="form-control" value="{{ old('bonus', 0) }}">
-                    </div>
+                            <div class="col-md-4 form-group">
+                                <label for="salary">Basic Salary</label>
+                                <input type="text" id="salary" name="salary" class="form-control" value="{{ old('salary') }}" readonly>
+                            </div>
 
-                    <div class="col-md-4 form-group">
-                        <label for="deductions">Deductions</label>
-                        <input type="number" name="deductions" id="deductions" class="form-control" value="{{ old('deductions', 0) }}">
-                    </div>
-                    <div class="col-md-4 form-group">
-                        <label for="advance">Advanced</label>
-                        <input type="number" name="advance" id="advance" class="form-control" value="{{ old('advance', 0) }}" readonly>
-                    </div>
-                    <div class="col-md-4 form-group">
-                        <label for="total">Total Salary</label>
-                        <input type="text" id="total" class="form-control" name="total" value="{{ old('total') }}" readonly>
-                    </div>
-                    @php
-                    $accounts = \App\Models\Account::where('type','asset')
-                    ->whereNotIn('id',[3,4])->get();
-                     @endphp
-                    <div class="col-md-4 form-group">
-                        <label for="">Account</label>
-                        <select name="account_id" id="account_id" class="select2">
-                            @forelse($accounts as $account)
-                                <option value="{{ $account->id }}">{{ $account->name }}</option>
-                            @empty
-                            @endforelse
-                        </select>
-                    </div>
+                            <div class="col-md-4 form-group">
+                                <label for="bonus">Bonus</label>
+                                <input type="number" name="bonus" id="bonus" class="form-control" value="{{ old('bonus', 0) }}">
+                            </div>
 
-                    <div class="col-md-4 form-group">
-                        <label for="pay_date">Pay Date</label>
-                        <input type="text" name="pay_date" id="pay_date" class="form-control flatpickr" value="{{ old('pay_date') }}" required>
-                    </div>
+                            <div class="col-md-4 form-group">
+                                <label for="deductions">Deductions</label>
+                                <input type="number" name="deductions" id="deductions" class="form-control" value="{{ old('deductions', 0) }}">
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="advance">Advanced</label>
+                                <input type="number" name="advance" id="advance" class="form-control" value="{{ old('advance', 0) }}" readonly>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="total">Total Salary</label>
+                                <input type="text" id="total" class="form-control" name="total" value="{{ old('total') }}" readonly>
+                            </div>
+                            @php
+                                $accounts = \App\Models\Account::where('type','asset')
+                                ->whereNotIn('id',[3,4])->get();
+                            @endphp
+                            <div class="col-md-4 form-group">
+                                <label for="">Account</label>
+                                <select name="account_id" id="account_id" class="select2">
+                                    @forelse($accounts as $account)
+                                        <option value="{{ $account->id }}">{{ $account->name }}</option>
+                                    @empty
+                                    @endforelse
+                                </select>
+                            </div>
 
-                    <div class="col-md-4 form-group d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary mt-3">Submit Payroll</button>
-                    </div>
+                            <div class="col-md-4 form-group">
+                                <label for="pay_date">Pay Date</label>
+                                <input type="text" name="pay_date" id="pay_date" class="form-control flatpickr" value="{{ old('pay_date') }}" required>
+                            </div>
+
+                            <div class="col-md-12 form-group d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary mt-3">Submit Payroll</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header mb-0">
+                    <h4 class="card-title text-center mb-0">User Detail</h4>
+                </div>
+                <div class="card-body user-detail">
+
+                </div>
+            </div>
         </div>
     </div>
+
+
+
 @endsection
 @section('js')
     <script>
@@ -103,7 +121,7 @@
         function getSalaryAndAdvance() {
             const userId = $userSelect.val();
             const month = $monthInput.val();
-
+            $(".user-detail").html('');
             if (userId && month) {
                 $.ajax({
                     url: '{{ route('get.salary') }}', // Update with your route for getting salary
@@ -113,6 +131,33 @@
                         month: month
                     },
                     success: function(response) {
+
+                        $(".user-detail").html(`
+                        <table class="table table-bordered">
+        <tr>
+            <th>Name</th> <td>${response.user.name}</td>
+        </tr>
+        <tr>
+            <th>Phone</th> <td>${response.user.phone}</td>
+        </tr>
+        <tr>
+            <th>Salary Month</th> <td>${response.month}</td>
+        </tr>
+        <tr>
+            <th>Status</th> <td><span class="badge ${response.is_paid === 'yes'?'bg-success':'bg-danger'}">${response.is_paid === 'yes'?'Paid':'Unpaid'}</span></td>
+        </tr>
+        <tr>
+            <th>Salary Amount</th> <td>${response.salary}</td>
+        </tr>
+        <tr>
+            <th>Advance</th> <td>${response.advance}</td>
+        </tr>
+ <tr>
+            <th>Remain</th> <td>${response.salary - response.advance}</td>
+        </tr>
+    </table>
+                        `);
+
                         $salaryInput.val(response.salary);
                         $advanceInput.val(response.advance);
                         $totalInput.val(response.salary); // Initialize total with salary

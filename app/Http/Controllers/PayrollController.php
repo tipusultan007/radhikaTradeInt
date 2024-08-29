@@ -7,6 +7,7 @@ use App\Models\JournalEntry;
 use App\Models\JournalEntryLineItem;
 use App\Models\User;
 use App\Models\Payroll;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -307,8 +308,14 @@ class PayrollController extends Controller
         $totalAdvanceSalary = AdvanceSalary::where('user_id', $user->id)
             ->where('month', $request->input('month'))
             ->sum('amount');
+        $paidSalary = Payroll::where('user_id', $user->id)
+            ->where('month', $request->input('month'))
+            ->first();
         $data['salary'] = $user->getLastIncrementedSalary();
         $data['advance'] = $totalAdvanceSalary;
+        $data['user'] = $user?$user:null;
+        $data['month'] = Carbon::parse($request->input('month'))->format('F Y');
+        $data['is_paid'] = $paidSalary?'yes':'no';
         return response()->json($data);
     }
 

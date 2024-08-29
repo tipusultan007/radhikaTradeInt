@@ -19,7 +19,10 @@
             <div class="card-body">
                 <form action="{{ route('advance_salary.store') }}" method="POST">
                     @csrf
-
+                    <div class="form-group">
+                        <label for="month">Month</label>
+                        <input type="month" name="month" id="month" class="form-control" value="{{ date('Y-m') }}">
+                    </div>
                     <div class="form-group">
                         <label for="user_id">User</label>
                         <select name="user_id" id="user_id" class="form-control" required>
@@ -30,6 +33,7 @@
                         </select>
                     </div>
 
+                    <div class="px-2" id="salaryInfo"></div>
                     <div class="form-group">
                         <label for="taken_on">Date</label>
                         <input type="text" name="taken_on" id="taken_on" class="form-control flatpickr" value="{{ date('Y-m-d') }}" required>
@@ -39,10 +43,6 @@
                         <input type="number" name="amount" id="amount" class="form-control" value="{{ old('amount') }}" required>
                     </div>
 
-                    <div class="form-group">
-                        <label for="month">Month</label>
-                        <input type="month" name="month" class="form-control" value="{{ date('Y-m') }}">
-                    </div>
 
                     <div class="form-group">
                         <label for="account_id">Account</label>
@@ -112,5 +112,61 @@
             theme: 'bootstrap',
             width: '100%'
         })
+
+        const $userSelect = $('#user_id');
+        const $monthInput = $('#month');
+
+        function getSalaryAndAdvance() {
+            const userId = $userSelect.val();
+            const month = $monthInput.val();
+
+            $("#salaryInfo").html('');
+
+            if (userId && month) {
+                $.ajax({
+                    url: '{{ route('get.salary') }}', // Update with your route for getting salary
+                    method: 'GET',
+                    data: {
+                        user_id: userId,
+                        month: month
+                    },
+                    success: function(response) {
+                        if (response.is_paid === 'yes') {
+                            $("#salaryInfo").html(`
+                        <table class="table table-bordered">
+                            <tr>
+                                <td class="text-danger">Salary of <b>${response.month}</b> has already been paid!</td>
+                            </tr>
+                        </table>
+                        `);
+                        }else {
+                            $("#salaryInfo").html(`
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Salary Month</th><td>${response.month}</td>
+                            </tr>
+                            <tr>
+                                <th>Salary</th><td>${response.salary}</td>
+                            </tr>
+                            <tr>
+                                <th>Advance</th><td>${response.advance}</td>
+                            </tr>
+                        </table>
+                        `);
+                        }
+                        $salaryInput.val(response.salary);
+                        $advanceInput.val(response.advance);
+                        $totalInput.val(response.salary); // Initialize total with salary
+
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error('Error fetching salary information. Please try again.');
+                    }
+                });
+            }
+        }
+
+        $userSelect.on('change', getSalaryAndAdvance);
+        $monthInput.on('change', getSalaryAndAdvance);
     </script>
 @endsection
