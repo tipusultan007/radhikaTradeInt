@@ -36,7 +36,7 @@
                 </tr>
                 <tr>
                     <th>Total Credit</th>
-                    <td class="text-end">{{ number_format($totalCredit, 2) }}</td>
+                    <td class="text-end">{{ number_format($totalCredit, 2) }} </td>
                 </tr>
                 </tbody>
             </table>

@@ -41,6 +41,37 @@ class Account extends Model
     {
         $debits = $this->journalEntryLineItems()->sum('debit');
         $credits = $this->journalEntryLineItems()->sum('credit');
+
+        return match ($this->type) {
+            'asset', 'expense' => $debits - $credits,
+            'liability', 'equity', 'revenue' => $credits - $debits,
+            default => 0,
+        };
+    }
+
+    public function childrenDebits()
+    {
+        $debits = $this->children()->with('journalEntryLineItems')->get()->reduce(function ($carry, $child) {
+            return $carry + $child->journalEntryLineItems->sum('debit') + $child->childrenDebits();
+        }, 0);
+
+        return $debits;
+    }
+
+    public function childrenCredits()
+    {
+        $credits = $this->children()->with('journalEntryLineItems')->get()->reduce(function ($carry, $child) {
+            return $carry + $child->journalEntryLineItems->sum('credit') + $child->childrenCredits();
+        }, 0);
+
+        return $credits;
+    }
+
+    public function totalBalance()
+    {
+        $debits = $this->journalEntryLineItems()->sum('debit') + $this->childrenDebits();
+        $credits = $this->journalEntryLineItems()->sum('credit') + $this->childrenCredits();
         return $debits - $credits;
     }
+
 }

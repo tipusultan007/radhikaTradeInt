@@ -17,7 +17,7 @@
                     <th>Parent</th>
                     <th>Type</th>
                     <th>Code</th>
-                    <th>Opening Balance</th>
+                    <th class="text-end">Balance</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -29,7 +29,7 @@
                         <td>{{ $account->parent->name??'' }}</td>
                         <td>{{ ucfirst($account->type) }}</td>
                         <td>{{ $account->code }}</td>
-                        <td>{{ number_format($account->opening_balance, 2) }}</td>
+                        <td class="text-end">{{ number_format($account->balance(), 2) }}</td>
                         <td>
                             <a href="{{ route('accounts.show', $account->id) }}" class="btn btn-primary btn-sm">View</a>
                             <a href="{{ route('accounts.edit', $account->id) }}" class="btn btn-warning btn-sm">Edit</a>
