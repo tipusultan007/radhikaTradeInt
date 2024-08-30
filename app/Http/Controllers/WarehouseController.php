@@ -76,7 +76,6 @@ class WarehouseController extends Controller
             'product_id' => 'required|exists:products,id',
             'packaging_type_id' => 'required|exists:packaging_types,id',
             'stock' => 'required|numeric|min:0',
-            'cost' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
             'dealer_price' => 'required|numeric|min:0',
             'commission_agent_price' => 'required|numeric|min:0',

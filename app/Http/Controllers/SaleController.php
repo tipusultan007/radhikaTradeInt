@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\PackagingType;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Models\SaleCommission;
 use App\Models\SaleDetail;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
@@ -117,7 +118,7 @@ class SaleController extends Controller
             // Create the Sale entry
             $sale = Sale::create($request->except('items'));
 
-            $this->createOrUpdateJournalEntryForSale($sale);
+            $commission = 0;
 
             // Loop through the sale items and add them to the SaleDetail table
             foreach ($validated['items'] as $item) {
@@ -134,6 +135,9 @@ class SaleController extends Controller
                     ->where('packaging_type_id', $item['packaging_type_id'])
                     ->first();
                 if ($warehouse) {
+
+                    $commission += ($item['price'] * $item['quantity']) - ($warehouse->commission_agent_price * $item['quantity']);
+
                     $warehouse->stock -= $item['quantity'];
                     if ($warehouse->stock < 0) {
                         throw new \Exception('Insufficient stock for this sale');
@@ -143,6 +147,9 @@ class SaleController extends Controller
                     throw new \Exception('No stock found for the specified product and packaging type');
                 }
             }
+
+            $this->createOrUpdateJournalEntryForSale($sale, $commission);
+
         });
 
         return redirect()->route('sales.index')->with('success', 'Sale recorded successfully');
@@ -170,6 +177,7 @@ class SaleController extends Controller
             // Fetch the existing sale record
             $sale = Sale::findOrFail($id);
 
+            $commission = 0;
             // Revert the stock for each item in the original sale
             foreach ($sale->details as $detail) {
                 $warehouse = Warehouse::where('product_id', $detail->product_id)
@@ -183,8 +191,6 @@ class SaleController extends Controller
 
             // Update the Sale entry
             $sale->update($request->except('items'));
-
-            $this->createOrUpdateJournalEntryForSale($sale);
 
             // Remove all previous sale details
             $sale->details()->delete();
@@ -204,6 +210,7 @@ class SaleController extends Controller
                     ->where('packaging_type_id', $item['packaging_type_id'])
                     ->first();
                 if ($warehouse) {
+                    $commission += ($item['price'] * $item['quantity']) - ($warehouse->commission_agent_price * $item['quantity']);
                     $warehouse->stock -= $item['quantity'];
                     if ($warehouse->stock < 0) {
                         throw new \Exception('Insufficient stock for this sale');
@@ -213,6 +220,8 @@ class SaleController extends Controller
                     throw new \Exception('No stock found for the specified product and packaging type');
                 }
             }
+
+            $this->createOrUpdateJournalEntryForSale($sale, $commission);
         });
 
         return redirect()->route('sales.index')->with('success', 'Sale updated successfully');
@@ -239,12 +248,14 @@ class SaleController extends Controller
             $sale->journalEntry->lineItems()->delete();
             $sale->journalEntry()->delete();
 
+            SaleCommission::where('sale_id', $id)->delete();
+
             $sale->delete();
         });
 
         return redirect()->route('sales.index')->with('success', 'Sale deleted successfully');
     }
-    private function createOrUpdateJournalEntryForSale(Sale $sale)
+    private function createOrUpdateJournalEntryForSale(Sale $sale, $commission = 0)
     {
         // Retrieve accounts
         $salesAccount = 6;
@@ -254,6 +265,22 @@ class SaleController extends Controller
         $totalAmount = $sale->total;
         $discountAmount = $sale->discount ?? 0; // If no discount, assume 0
         $dueAmount = $totalAmount - $paidAmount;
+
+        if ($sale->referrer_id != '' && $commission > 0) {
+            $commissionAccount = Account::where('name','Sales Commission')->first();
+            $salesCommission = SaleCommission::updateOrCreate(
+                [
+                    'sale_id' => $sale->id,
+                ],
+                [
+                    'user_id' => $sale->referrer_id,
+                    'commission' => $commission
+                ]
+            );
+
+        }else{
+            SaleCommission::where('sale_id', $sale->id)->delete();
+        }
 
         // Find or create the Journal Entry for the sale
         $journalEntry = $sale->journalEntry()->first(); // Get the existing journal entry if it exists
@@ -289,8 +316,16 @@ class SaleController extends Controller
             $journalEntry->lineItems()->create([
                 'account_id' => $salesAccount,
                 'debit' => 0,
-                'credit' => $totalAmount,
+                'credit' => $totalAmount - $commission,
             ]);
+
+            if ($commission>0){
+                $journalEntry->lineItems()->create([
+                    'account_id' => $commissionAccount->id,
+                    'debit' => 0,
+                    'credit' => $commission,
+                ]);
+            }
 
             // Scenario 2: Partial Payment
         } elseif ($paidAmount > 0 && $paidAmount < $totalAmount) {
@@ -312,8 +347,16 @@ class SaleController extends Controller
             $journalEntry->lineItems()->create([
                 'account_id' => $salesAccount,
                 'debit' => 0,
-                'credit' => $totalAmount,
+                'credit' => $totalAmount - $commission,
             ]);
+
+            if ($commission>0){
+                $journalEntry->lineItems()->create([
+                    'account_id' => $commissionAccount->id,
+                    'debit' => 0,
+                    'credit' => $commission,
+                ]);
+            }
 
             // Scenario 3: Full Due
         } else {
@@ -328,8 +371,16 @@ class SaleController extends Controller
             $journalEntry->lineItems()->create([
                 'account_id' => $salesAccount,
                 'debit' => 0,
-                'credit' => $totalAmount,
+                'credit' => $totalAmount - $commission,
             ]);
+
+            if ($commission>0){
+                $journalEntry->lineItems()->create([
+                    'account_id' => $commissionAccount->id,
+                    'debit' => 0,
+                    'credit' => $commission,
+                ]);
+            }
         }
     }
 
