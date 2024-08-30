@@ -61,6 +61,9 @@
                                 <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $customer->type)) }}</span>
                             </td>
                             <td>
+                                <a href="{{ route('customers.show', $customer->id) }}" class="btn btn-primary btn-icon btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-warning btn-icon btn-sm">
                                     <i class="fas fa-edit"></i>
                                 </a>

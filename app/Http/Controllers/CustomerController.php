@@ -20,6 +20,11 @@ class CustomerController extends Controller
         return view('customers.create');
     }
 
+    public function show($id)
+    {
+        $customer = Customer::find($id);
+        return view('customers.show', compact('customer'));
+    }
     // Store a newly created customer in storage
     public function store(Request $request)
     {

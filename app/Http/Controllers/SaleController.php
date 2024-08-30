@@ -273,7 +273,7 @@ class SaleController extends Controller
                     'sale_id' => $sale->id,
                 ],
                 [
-                    'user_id' => $sale->referrer_id,
+                    'customer_id' => $sale->referrer_id,
                     'commission' => $commission
                 ]
             );
@@ -319,7 +319,7 @@ class SaleController extends Controller
                 'credit' => $totalAmount - $commission,
             ]);
 
-            if ($commission>0){
+            if ($sale->referrer_id != '' && $commission > 0){
                 $journalEntry->lineItems()->create([
                     'account_id' => $commissionAccount->id,
                     'debit' => 0,
@@ -350,7 +350,7 @@ class SaleController extends Controller
                 'credit' => $totalAmount - $commission,
             ]);
 
-            if ($commission>0){
+            if ($sale->referrer_id != '' && $commission > 0){
                 $journalEntry->lineItems()->create([
                     'account_id' => $commissionAccount->id,
                     'debit' => 0,
@@ -374,7 +374,7 @@ class SaleController extends Controller
                 'credit' => $totalAmount - $commission,
             ]);
 
-            if ($commission>0){
+            if ($sale->referrer_id != '' && $commission > 0){
                 $journalEntry->lineItems()->create([
                     'account_id' => $commissionAccount->id,
                     'debit' => 0,

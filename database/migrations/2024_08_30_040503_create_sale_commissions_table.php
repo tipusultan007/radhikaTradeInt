@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sale_commissions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('sale_id');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('customer_id');
             $table->decimal('commission', 8, 2)->nullable();
             $table->timestamps();
         });

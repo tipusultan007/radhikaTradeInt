@@ -12,7 +12,8 @@ class SaleCommissionController extends Controller
      */
     public function index()
     {
-        //
+        $salesCommissions = SaleCommission::orderbyDesc('created_at')->paginate(10);
+        return view('sales_commissions.index', compact('salesCommissions'));
     }
 
     /**

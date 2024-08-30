@@ -15,6 +15,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryIncrementController;
+use App\Http\Controllers\SaleCommissionController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseController;
@@ -62,6 +63,7 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
     //Route::post('/permissions/assign', [PermissionController::class, 'assignPermissions'])->name('permissions.assign');
 
     Route::resource('advance_salary', AdvanceSalaryController::class);
+    Route::resource('sales-commissions', SaleCommissionController::class);
 
     Route::get('getSalary',[PayrollController::class,'getSalary'])->name('get.salary');
 });

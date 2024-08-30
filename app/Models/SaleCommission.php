@@ -12,7 +12,7 @@ class SaleCommission extends Model
     protected $fillable = [
         'sale_id',
         'commission',
-        'user_id',
+        'customer_id',
     ];
 
     public function sale()
@@ -20,9 +20,9 @@ class SaleCommission extends Model
         return $this->belongsTo(Sale::class);
     }
 
-    public function user()
+    public function customer()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Customer::class);
     }
 
     public function journalEntry()

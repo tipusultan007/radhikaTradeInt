@@ -20,6 +20,32 @@
                     @endforeach
                 </select>
             </div>
+
+            @php
+                $commisionAgents = \App\Models\Customer::where('type','commission_agent')->get();
+            @endphp
+            @if($sale->referrer_id != '')
+            <div class="col-md-4 form-group referrer">
+                <label for="referrer_id">Referrer</label>
+                <select name="referrer_id" id="referrer_id" class="form-select select2">
+                    <option value=""></option>
+                    @foreach($commisionAgents as $agent)
+                        <option data-type="{{ $agent->type }}" value="{{ $agent->id }}" {{ $agent->id === $sale->referrer_id?'selected':'' }}>{{ $agent->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            @else
+                <div class="col-md-4 form-group referrer"  style="display: none">
+                    <label for="referrer_id">Referrer</label>
+                    <select name="referrer_id" id="referrer_id" class="form-select select2">
+                        <option value=""></option>
+                        @foreach($commisionAgents as $agent)
+                            <option data-type="{{ $agent->type }}" value="{{ $agent->id }}">{{ $agent->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
+
         </div>
 
         <h3>Sale Items</h3>
@@ -277,7 +303,16 @@
                 });
             }
         });
+        $('#customer_id').on('change', function() {
+            var selectedType = $('#customer_id option:selected').data('type');
 
+            if (selectedType === 'customer' || selectedType === 'commission_agent') {
+                $('.referrer').show();
+            } else {
+                $('.referrer').hide();
+                $('#referrer_id').val(null).trigger('change');
+            }
+        });
         $(document).ready(function() {
             // Listen for changes to the paid_amount input
             $('.paid_amount').on('input', function() {
@@ -296,7 +331,8 @@
         $(".select2").select2({
             theme: "bootstrap",
             width: "100%",
-            placeholder: " -- Select --"
+            placeholder: " -- Select --",
+            allowClear: true
         });
     </script>
 @endsection
