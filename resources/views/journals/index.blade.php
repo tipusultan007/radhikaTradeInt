@@ -27,6 +27,7 @@
                                    $isFirstLineItem = false;
                                @endphp
                            @endif
+
                            <td class="{{ $item->credit > 0 ? 'text-end' : '' }}">{{ $item->account->name }}</td>
                            <td class="text-success text-end">{{ $item->debit > 0 ? number_format($item->debit, 2) : '' }}</td>
                            <td class="text-danger text-end">{{ $item->credit > 0 ? number_format($item->credit, 2) : '' }}</td>

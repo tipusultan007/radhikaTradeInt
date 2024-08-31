@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JournalEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class JournalController extends Controller
 {
@@ -13,4 +14,6 @@ class JournalController extends Controller
             ->orderBy('date','desc')->paginate(10);
         return view('journals.index', compact('journalEntries'));
     }
+
+
 }

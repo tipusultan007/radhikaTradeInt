@@ -5,6 +5,7 @@ use App\Http\Controllers\AdvanceSalaryController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\BalanceSheetController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HomeController;
@@ -40,7 +41,9 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('assets', AssetController::class);
     Route::resource('payroll', PayrollController::class);
+    Route::resource('customer-payments', CustomerPaymentController::class);
     Route::get('/journals', [JournalController::class, 'index'])->name('journals.index');
+    Route::post('journals-store', [JournalController::class, 'store'])->name('journals.store');
     Route::get('/warehouse-info', [WarehouseController::class, 'getWarehouseInfo'])->name('warehouse.info');
     Route::post('/salary-increments', [SalaryIncrementController::class, 'store'])->name('salary-increments.store');
     Route::get('/balance-sheet', [BalanceSheetController::class, 'show'])->name('balance_sheet.show');

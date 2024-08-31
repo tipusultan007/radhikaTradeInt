@@ -43,15 +43,17 @@
                     <h4 class="card-title">Payment Form</h4>
                 </div>
                 <div class="card-body">
-                    <form action="">
+                    <form action="{{ route('customer-payments.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="customer_id" value="{{ $customer->id }}">
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 <label for="" class="form-label">Date</label>
-                                <input type="text" name="date" class="form-control flatpickr">
+                                <input type="text" name="date" value="{{ date('Y-m-d') }}" class="form-control flatpickr">
                             </div>
                             <div class="col-md-6 form-group">
                                 <label for="" class="form-label">Amount</label>
-                                <input type="text" name="date" class="form-control">
+                                <input type="text" name="amount" class="form-control">
                             </div>
                             @php
                                 $accounts = \App\Models\Account::where('type','asset')->whereNotIn('id',[3,4])->get();
@@ -85,13 +87,23 @@
 
     <div class="card">
         <table class="table table-striped table-bordered">
+            <thead>
             <tr>
                 <th>Date</th>
                 <th>Particulars</th>
                 <th>Amount</th>
-                <th>Balance</th>
                 <th>Action</th>
             </tr>
+            </thead>
+            @forelse($lineItems as $lineItem)
+            <tr>
+                <td>{{ $lineItem->journalEntry->date->format('d/m/Y') }}</td>
+                <td>{{ $lineItem->account->name }}</td>
+                <td>{{ $lineItem->debit>0?$lineItem->debit:$lineItem->credit }}</td>
+                <td></td>
+            </tr>
+            @empty
+            @endforelse
         </table>
     </div>
 
