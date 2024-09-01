@@ -125,6 +125,12 @@
                         </td>
                     </tr>
                     <tr>
+                        <th>Note</th>
+                        <td>
+                            <input type="text" name="note" placeholder="Write note..." class="form-control mb-1">
+                        </td>
+                    </tr>
+                    <tr>
                         <td colspan="2">
                             <div class="d-flex justify-content-end">
                                 <button type="submit" class="btn btn-success w-50">Create Sale</button>
