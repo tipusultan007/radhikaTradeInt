@@ -29,7 +29,7 @@
                         </div>
                         <div class="col-md-4 info-invoice">
                             <h5 class="sub">Invoice ID</h5>
-                            <p>#{{ $sale->id }}</p>
+                            <p>#{{ $sale->invoice_no }}</p>
                         </div>
                         <div class="col-md-4 info-invoice">
                             <h5 class="sub">Invoice To</h5>

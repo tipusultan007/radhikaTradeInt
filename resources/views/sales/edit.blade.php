@@ -5,14 +5,15 @@
         @csrf
         @method('PUT')
         <div class="row">
+
             <div class="col-md-2 form-group">
                 <label for="date" class="form-label">Date</label>
                 <input type="text" name="date" class="form-control flatpickr" value="{{ old('date', $sale->date) }}">
             </div>
 
             <div class="col-md-2 form-group">
-                <label for="date" class="form-label">Date</label>
-                <input type="text" name="date" class="form-control flatpickr" value="{{ date('Y-m-d') }}">
+                <label for="invoice_no" class="form-label">Invoice NO</label>
+                <input type="text" name="invoice_no" class="form-control" value="{{ $sale->invoice_no }}">
             </div>
             <div class="col-md-2 form-group">
                 <label for="customer_type" class="form-label">Customer Type</label>
@@ -25,10 +26,16 @@
                     <option value="wholesale" {{ $sale->customer->type === 'wholesale'? 'selected':'' }}>Wholesale</option>
                 </select>
             </div>
+            @php
+            $customers = \App\Models\Customer::where('type',$sale->customer->type)->get();
+            @endphp
             <div class="col-md-3 form-group">
                 <label for="customer_id">Customer</label>
                 <select name="customer_id" id="customer_id" class="form-select select2" required>
-
+                    @forelse($customers as $customer)
+                        <option value="{{ $customer->id }}" {{ $customer->id == $sale->customer_id?'selected':'' }}>{{ $customer->name }}</option>
+                    @empty
+                    @endforelse
                 </select>
             </div>
 
@@ -49,7 +56,10 @@
                 <div class="col-md-3 form-group referrer"  style="display: none">
                     <label for="referrer_id">Referrer</label>
                     <select name="referrer_id" id="referrer_id" class="form-select select2">
-
+                        <option value=""></option>
+                        @foreach($commisionAgents as $agent)
+                            <option data-type="{{ $agent->type }}" value="{{ $agent->id }}" {{ $agent->id === $sale->referrer_id?'selected':'' }}>{{ $agent->name }}</option>
+                        @endforeach
                     </select>
                 </div>
             @endif
@@ -110,7 +120,7 @@
             </tbody>
         </table>
         <div class="row justify-content-end">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <table class="table">
                     <tr>
                         <th>Subtotal</th> <td><input type="text" name="subtotal" class="form-control subtotal" value="{{ $sale->subtotal }}"></td>
@@ -128,7 +138,13 @@
                         <th>Total</th> <td><input type="text" name="total" class="form-control total" value="{{ $sale->total }}"></td>
                     </tr>
                     <tr>
-                        <th>Paid Amount</th> <td><input type="text" name="paid_amount" value="{{ $sale->paid_amount??'0' }}" class="form-control paid_amount"></td>
+                        <th>Paid Amount</th> <td><input type="text" name="paid_amount" value="{{ $sale->paid_amount??'0' }}" class="form-control paid_amount">
+                            <div class="form-check px-0">
+                                <input class="form-check-input" type="checkbox" value="1" id="fullPayment">
+                                <label class="form-check-label" for="fullPayment">
+                                    Full Payment
+                                </label>
+                            </div></td>
                     </tr>
                     <tr>
                         <th>Pay via</th> <td>
@@ -145,7 +161,7 @@
                     <tr>
                         <th>Note</th>
                         <td>
-                            <input type="text" name="note" placeholder="Write note..." class="form-control mb-1">
+                            <input type="text" name="note" placeholder="Write note..." value="{{ $sale->note??'' }}" class="form-control mb-1">
                         </td>
                     </tr>
                     <tr>
@@ -317,16 +333,18 @@
                 });
             }
         });
-        /*$('#customer_id').on('change', function() {
-            var selectedType = $('#customer_id option:selected').data('type');
 
-            if (selectedType === 'customer' || selectedType === 'commission_agent') {
-                $('.referrer').show();
+        $('#fullPayment').change(function() {
+            if ($(this).is(':checked')) {
+                // If checkbox is checked, set paid_amount to the total value
+                var totalAmount = $('.total').val();
+                $('.paid_amount').val(totalAmount);
             } else {
-                $('.referrer').hide();
-                $('#referrer_id').val(null).trigger('change');
+                // Optionally, you can clear the paid_amount field if the checkbox is unchecked
+                $('.paid_amount').val('0');
             }
-        });*/
+        });
+
         $(document).ready(function() {
             // Listen for changes to the paid_amount input
             $('.paid_amount').on('input', function() {
@@ -340,6 +358,8 @@
             });
         });
         $(document).ready(function() {
+            var customerId = "{{ $sale->customer_id }}";
+            var customerTypeOld = "{{ $sale->customer->type }}";
             // Listen for changes on the customer_type select field
             $('#customer_type').on('change', function() {
                 var customerType = $(this).val();
@@ -369,6 +389,10 @@
                             allowClear: true
                         });
 
+                        if (customerTypeOld === customerType){
+                            $("#customer_id").val(customerId).trigger('change');
+                        }
+
                     },
                     error: function(xhr, status, error) {
                         console.error(error);
@@ -385,7 +409,7 @@
             });
 
             // Trigger change event on page load to set initial state
-            $('#customer_type').trigger('change');
+            //$('#customer_type').trigger('change');
         });
     </script>
     <script>

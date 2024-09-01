@@ -86,7 +86,7 @@
             </tbody>
         </table>
         <div class="row justify-content-end">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <table class="table">
                     <tr>
                         <th>Subtotal</th> <td><input type="text" name="subtotal" class="form-control subtotal"></td>
@@ -104,7 +104,13 @@
                         <th>Total</th> <td><input type="text" name="total" class="form-control total"></td>
                     </tr>
                     <tr>
-                        <th>Paid Amount</th> <td><input type="text" name="paid_amount" value="0" class="form-control paid_amount"></td>
+                        <th>Paid Amount</th> <td><input type="text" name="paid_amount" value="0" class="form-control paid_amount">
+                            <div class="form-check px-0">
+                                <input class="form-check-input" type="checkbox" value="1" id="fullPayment">
+                                <label class="form-check-label" for="fullPayment">
+                                    Full Payment
+                                </label>
+                            </div></td>
                     </tr>
                     <tr>
                         <th>Pay via</th> <td>
@@ -327,6 +333,17 @@
                     $('#account_id').removeAttr('required');
                 }
             });
+        });
+
+        $('#fullPayment').change(function() {
+            if ($(this).is(':checked')) {
+                // If checkbox is checked, set paid_amount to the total value
+                var totalAmount = $('.total').val();
+                $('.paid_amount').val(totalAmount);
+            } else {
+                // Optionally, you can clear the paid_amount field if the checkbox is unchecked
+                $('.paid_amount').val('0');
+            }
         });
 
         $(document).ready(function() {

@@ -11,7 +11,7 @@
             <th>Invoice #</th>
             <th>Customer</th>
             <th>Type</th>
-            <th>Total Amount</th>
+            <th class="text-end">Total Amount</th>
             <th class="text-end">Actions</th>
         </tr>
         </thead>
@@ -50,16 +50,25 @@
                     @endphp
                     <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $sale->customer->type)) }}</span>
                 </td>
-                <td>{{ $sale->total }}</td>
+                <td class="text-end">{{ $sale->total }}</td>
                 <td class="text-end">
-                    <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-info btn-sm">View</a>
-                    <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this sale?');">Delete</button>
-                    </form>
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-icon btn-info">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-icon btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-icon" onclick="return confirm('Are you sure you want to delete this sale?');">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </div>
                 </td>
+
             </tr>
         @endforeach
         </tbody>
