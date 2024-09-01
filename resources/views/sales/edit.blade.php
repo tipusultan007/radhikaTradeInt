@@ -5,19 +5,30 @@
         @csrf
         @method('PUT')
         <div class="row">
-            <div class="col-md-3 form-group">
+            <div class="col-md-2 form-group">
                 <label for="date" class="form-label">Date</label>
                 <input type="text" name="date" class="form-control flatpickr" value="{{ old('date', $sale->date) }}">
             </div>
-            <div class="col-md-4 form-group">
+
+            <div class="col-md-2 form-group">
+                <label for="date" class="form-label">Date</label>
+                <input type="text" name="date" class="form-control flatpickr" value="{{ date('Y-m-d') }}">
+            </div>
+            <div class="col-md-2 form-group">
+                <label for="customer_type" class="form-label">Customer Type</label>
+                <select name="customer_type" id="customer_type" class="select2">
+                    <option value="customer" {{ $sale->customer->type === 'customer'? 'selected':'' }}>Customer</option>
+                    <option value="dealer" {{ $sale->customer->type === 'dealer'? 'selected':'' }}>Dealer</option>
+                    <option value="commission_agent" {{ $sale->customer->type === 'commission_agent'? 'selected':'' }}>Commission Agent</option>
+                    <option value="retailer" {{ $sale->customer->type === 'retailer'? 'selected':'' }}>Retailer</option>
+                    <option value="retail" {{ $sale->customer->type === 'retail'? 'selected':'' }}>Retail</option>
+                    <option value="wholesale" {{ $sale->customer->type === 'wholesale'? 'selected':'' }}>Wholesale</option>
+                </select>
+            </div>
+            <div class="col-md-3 form-group">
                 <label for="customer_id">Customer</label>
                 <select name="customer_id" id="customer_id" class="form-select select2" required>
-                    <option value=""></option>
-                    @foreach($customers as $customer)
-                        <option data-type="{{ $customer->type }}" value="{{ $customer->id }}" {{ $customer->id == old('customer_id', $sale->customer_id) ? 'selected' : '' }}>
-                            {{ $customer->name }} - {{ strtoupper($customer->type) }}
-                        </option>
-                    @endforeach
+
                 </select>
             </div>
 
@@ -25,7 +36,7 @@
                 $commisionAgents = \App\Models\Customer::where('type','commission_agent')->get();
             @endphp
             @if($sale->referrer_id != '')
-            <div class="col-md-4 form-group referrer">
+            <div class="col-md-3 form-group referrer">
                 <label for="referrer_id">Referrer</label>
                 <select name="referrer_id" id="referrer_id" class="form-select select2">
                     <option value=""></option>
@@ -35,13 +46,10 @@
                 </select>
             </div>
             @else
-                <div class="col-md-4 form-group referrer"  style="display: none">
+                <div class="col-md-3 form-group referrer"  style="display: none">
                     <label for="referrer_id">Referrer</label>
                     <select name="referrer_id" id="referrer_id" class="form-select select2">
-                        <option value=""></option>
-                        @foreach($commisionAgents as $agent)
-                            <option data-type="{{ $agent->type }}" value="{{ $agent->id }}">{{ $agent->name }}</option>
-                        @endforeach
+
                     </select>
                 </div>
             @endif
@@ -132,6 +140,12 @@
                                     <option value="" disabled>No payment method found!</option>
                                 @endforelse
                             </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Note</th>
+                        <td>
+                            <input type="text" name="note" placeholder="Write note..." class="form-control mb-1">
                         </td>
                     </tr>
                     <tr>
@@ -303,7 +317,7 @@
                 });
             }
         });
-        $('#customer_id').on('change', function() {
+        /*$('#customer_id').on('change', function() {
             var selectedType = $('#customer_id option:selected').data('type');
 
             if (selectedType === 'customer' || selectedType === 'commission_agent') {
@@ -312,7 +326,7 @@
                 $('.referrer').hide();
                 $('#referrer_id').val(null).trigger('change');
             }
-        });
+        });*/
         $(document).ready(function() {
             // Listen for changes to the paid_amount input
             $('.paid_amount').on('input', function() {
@@ -325,7 +339,54 @@
                 }
             });
         });
+        $(document).ready(function() {
+            // Listen for changes on the customer_type select field
+            $('#customer_type').on('change', function() {
+                var customerType = $(this).val();
 
+                // Make an AJAX request to fetch customers based on the selected customer type
+                $.ajax({
+                    url: '/admin/get-customers', // Update this with the correct route URL
+                    method: 'GET',
+                    data: {
+                        type: customerType
+                    },
+                    success: function(data) {
+                        // Clear the customer_id select field
+                        $('#customer_id').empty();
+
+                        $('#customer_id').append('<option value=""></option>');
+                        // Populate the customer_id select field with the fetched data
+                        data.customers.forEach(function(customer) {
+                            $('#customer_id').append('<option value="' + customer.id + '">' + customer.name + '</option>');
+                        });
+
+                        // Reinitialize select2 for the updated options
+                        $('#customer_id').select2({
+                            theme: "bootstrap",
+                            width: "100%",
+                            placeholder: " -- Select --",
+                            allowClear: true
+                        });
+
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+
+                // Show or hide the referrer field based on the customer type
+                if (customerType === 'customer') {
+                    $('.referrer').show();
+                } else {
+                    $('.referrer').hide();
+                    $('#referrer_id').val(null).trigger('change');
+                }
+            });
+
+            // Trigger change event on page load to set initial state
+            $('#customer_type').trigger('change');
+        });
     </script>
     <script>
         $(".select2").select2({
