@@ -17,7 +17,7 @@ class SaleController extends Controller
     // List all sales
     public function index()
     {
-        $sales = Sale::with('details.product', 'details.packagingType', 'customer')->get();
+        $sales = Sale::with('details.product', 'details.packagingType', 'customer')->orderByDesc('date')->paginate(10);
         return view('sales.index', compact('sales'));
     }
 

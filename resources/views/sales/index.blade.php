@@ -4,7 +4,7 @@
     <a href="{{ route('sales.create') }}" class="btn btn-primary">Create New Sale</a>
 @endsection
 @section('content')
-    <table class="table table-striped">
+    <table class="table table-striped table-bordered">
         <thead>
         <tr>
             <th>Invoice #</th>
@@ -34,4 +34,5 @@
         @endforeach
         </tbody>
     </table>
+    {{ $sales->links() }}
 @endsection
