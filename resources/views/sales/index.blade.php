@@ -7,7 +7,7 @@
     <table class="table table-striped">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>Invoice #</th>
             <th>Customer</th>
             <th>Total Amount</th>
             <th>Date</th>
@@ -17,7 +17,7 @@
         <tbody>
         @foreach($sales as $sale)
             <tr>
-                <td>{{ $sale->id }}</td>
+                <td>{{ $sale->invoice_no }}</td>
                 <td>{{ $sale->customer->name }}</td>
                 <td>{{ $sale->total }}</td>
                 <td>{{ \Carbon\Carbon::parse($sale->date)->format('d/m/Y') }}</td>
