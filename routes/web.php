@@ -69,5 +69,9 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
     Route::resource('sales-commissions', SaleCommissionController::class);
 
     Route::get('getSalary',[PayrollController::class,'getSalary'])->name('get.salary');
+
+    // web.php
+    Route::get('/get-customers', [CustomerController::class, 'getCustomers']);
+
 });
 

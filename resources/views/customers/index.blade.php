@@ -22,6 +22,7 @@
                         <th>Phone</th>
                         <th>Address</th>
                         <th>Type</th>
+                        <th>Balance</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -51,15 +52,16 @@
                                             $badgeClass = 'badge-secondary';
                                             break;
                                         case 'customer':
-                                            $badgeClass = 'badge-dark';
+                                            $badgeClass = 'badge-black';
                                             break;
                                         default:
-                                            $badgeClass = 'badge-light';
+                                            $badgeClass = 'badge-count';
                                             break;
                                     }
                                 @endphp
                                 <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $customer->type)) }}</span>
                             </td>
+                            <td>{{ $customer->balance }}</td>
                             <td>
                                 <a href="{{ route('customers.show', $customer->id) }}" class="btn btn-primary btn-icon btn-sm">
                                     <i class="fas fa-eye"></i>

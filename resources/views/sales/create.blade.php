@@ -4,29 +4,36 @@
     <form action="{{ route('sales.store') }}" method="POST">
         @csrf
         <div class="row">
-            <div class="col-md-3 form-group">
+
+            <div class="col-md-2 form-group">
                 <label for="date" class="form-label">Date</label>
                 <input type="text" name="date" class="form-control flatpickr" value="{{ date('Y-m-d') }}">
             </div>
-            <div class="col-md-4 form-group">
-                <label for="customer_id">Customer</label>
-                <select name="customer_id" id="customer_id" class="form-select select2" required>
-                    <option value=""></option>
-                    @foreach($customers as $customer)
-                        <option data-type="{{ $customer->type }}" value="{{ $customer->id }}">{{ $customer->name }} - {{ strtoupper($customer->type) }}</option>
-                    @endforeach
+            <div class="col-md-2 form-group">
+                <label for="date" class="form-label">Invoice NO</label>
+                <input type="number" name="invoice_no" class="form-control" >
+            </div>
+            <div class="col-md-2 form-group">
+                <label for="customer_type" class="form-label">Customer Type</label>
+                <select name="customer_type" id="customer_type" class="select2">
+                    <option value="customer">Customer</option>
+                    <option value="dealer">Dealer</option>
+                    <option value="commission_agent">Commission Agent</option>
+                    <option value="retailer">Retailer</option>
+                    <option value="retail">Retail</option>
+                    <option value="wholesale">Wholesale</option>
                 </select>
             </div>
-            @php
-                $commisionAgents = \App\Models\Customer::where('type','commission_agent')->get();
-            @endphp
-            <div class="col-md-4 form-group referrer" style="display: none">
+            <div class="col-md-3 form-group">
+                <label for="customer_id">Customer</label>
+                <select name="customer_id" id="customer_id" class="form-select select2" required>
+                </select>
+            </div>
+
+            <div class="col-md-3 form-group referrer" style="display: none">
                 <label for="referrer_id">Referrer</label>
                 <select name="referrer_id" id="referrer_id" class="form-select select2">
-                    <option value=""></option>
-                    @foreach($commisionAgents as $agent)
-                        <option data-type="{{ $agent->type }}" value="{{ $agent->id }}">{{ $agent->name }}</option>
-                    @endforeach
+
                 </select>
             </div>
         </div>
@@ -231,17 +238,7 @@
             "progressBar": true,
             "positionClass": "toast-top-right",
         };
-        // When product or packaging type changes
-        $('#customer_id').on('change', function() {
-            var selectedType = $('#customer_id option:selected').data('type');
 
-            if (selectedType === 'customer' || selectedType === 'commission_agent') {
-                $('.referrer').show();
-            } else {
-                $('.referrer').hide();
-                $('#referrer_id').val(null).trigger('change');
-            }
-        });
         $('#account_id').on('change', function() {
             var selectedId = $('#account_id option:selected').val();
 
@@ -254,13 +251,13 @@
             }
         });
         // Trigger change event on page load to ensure correct initial state
-        $('#customer_id').trigger('change');
+        //$('#customer_id').trigger('change');
 
         $(document).on('change', 'select[name^="items"]', function() {
             var $row = $(this).closest('tr');
             var product_id = $row.find('select[name$="[product_id]"]').val();
             var packaging_type_id = $row.find('select[name$="[packaging_type_id]"]').val();
-            var customer_type = $('#customer_id').find('option:selected').data('type');
+            var customer_type = $('#customer_type option:selected').val();
 
             if (product_id && packaging_type_id) {
                 $.ajax({
@@ -276,9 +273,9 @@
                             case 'dealer':
                                 price = response.dealer_price;
                                 break;
-                            /*case 'commission_agent':
+                            case 'commission_agent':
                                 price = response.commission_agent_price;
-                                break;*/
+                                break;
                             case 'retailer':
                                 price = response.retailer_price;
                                 break;
@@ -324,6 +321,54 @@
                     $('#account_id').removeAttr('required');
                 }
             });
+        });
+
+        $(document).ready(function() {
+            // Listen for changes on the customer_type select field
+            $('#customer_type').on('change', function() {
+                var customerType = $(this).val();
+
+                // Make an AJAX request to fetch customers based on the selected customer type
+                $.ajax({
+                    url: '/admin/get-customers', // Update this with the correct route URL
+                    method: 'GET',
+                    data: {
+                        type: customerType
+                    },
+                    success: function(data) {
+                        // Clear the customer_id select field
+                        $('#customer_id').empty();
+
+                        $('#customer_id').append('<option value=""></option>');
+                        // Populate the customer_id select field with the fetched data
+                        data.customers.forEach(function(customer) {
+                            $('#customer_id').append('<option value="' + customer.id + '">' + customer.name + '</option>');
+                        });
+
+                        // Reinitialize select2 for the updated options
+                        $('#customer_id').select2({
+                            theme: "bootstrap",
+                            width: "100%",
+                            placeholder: " -- Select --",
+                            allowClear: true
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+
+                // Show or hide the referrer field based on the customer type
+                if (customerType === 'customer') {
+                    $('.referrer').show();
+                } else {
+                    $('.referrer').hide();
+                    $('#referrer_id').val(null).trigger('change');
+                }
+            });
+
+            // Trigger change event on page load to set initial state
+            $('#customer_type').trigger('change');
         });
 
     </script>
