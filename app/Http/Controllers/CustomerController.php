@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\JournalEntry;
 use App\Models\JournalEntryLineItem;
 use Illuminate\Http\Request;
 
@@ -23,12 +24,13 @@ class CustomerController extends Controller
 
     public function show($id)
     {
+        $journalEntries = JournalEntry::with('lineItems', 'journalable')
+            ->where('customer_id', $id)->whereIn('type',['sale','customer_payment'])
+            ->orderBy('date','asc')->get();
+
         $customer = Customer::find($id);
-        $lineItems = JournalEntryLineItem::whereHas('journalEntry', function ($query) use ($id) {
-           $query->where('customer_id', $id)->whereIn('type',['sale','customer_payment']);
-        })->whereIn('account_id', [1,2,3,6])->get();
-        $journals = $customer->journals;
-        return view('customers.show', compact('customer','journals','lineItems'));
+
+        return view('customers.show', compact('customer','journalEntries'));
     }
     // Store a newly created customer in storage
     public function store(Request $request)
