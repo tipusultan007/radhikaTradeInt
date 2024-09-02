@@ -48,19 +48,13 @@ class Customer extends Model
     }
     public function getCommissionAttribute()
     {
-        // Retrieve the commission account
-        $commissionAccount = Account::where('type', 'liability')
-            ->where('name', 'Sales Commission')
-            ->first();
-        if (!$commissionAccount) {
-            return 0; // Return 0 if the commission account doesn't exist
-        }
-        $paid = JournalEntryLineItem::getTotalPaidCommission($this->id);
 
-
-        $totalCommission = $this->commissions()->sum('commission');
-        return $totalCommission - $paid;
+        return $this->commissions()->sum('commission') - $this->commissionWithdraws()->sum('amount');
     }
 
+    public function commissionWithdraws()
+    {
+        return $this->hasMany(CommissionWithdraw::class);
+    }
 
 }

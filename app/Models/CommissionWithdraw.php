@@ -31,4 +31,6 @@ class CommissionWithdraw extends Model
     {
         return $this->morphOne(JournalEntry::class, 'journalable');
     }
+
+
 }
