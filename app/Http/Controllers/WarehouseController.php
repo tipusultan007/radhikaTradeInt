@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductStock;
 use App\Models\Warehouse;
 use App\Models\PackagingType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WarehouseController extends Controller
 {
@@ -141,5 +143,26 @@ class WarehouseController extends Controller
                 'wholesale_price' => 0,
             ], 404);
         }
+    }
+
+    public function productStock(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $warehouse = Warehouse::find(request('warehouse_id'));
+            $productStock = ProductStock::create(request()->all());
+
+            $warehouse->stock += $productStock->quantity;
+            $warehouse->save();
+
+            DB::commit();
+            return redirect()->route('warehouses.index')->with('success', 'Product stock added successfully.');
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return redirect()->route('warehouses.index')->with('error', $exception->getMessage());
+        }
+
+       // return redirect()->route('warehouses.index')->with('success', 'Product stock updated successfully.');
     }
 }

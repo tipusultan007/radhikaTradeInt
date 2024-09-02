@@ -77,5 +77,7 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
     Route::resource('balance_transfers', BalanceTransferController::class);
 
     Route::resource('commission-withdraw',CommissionWithdrawController::class);
+
+    Route::post('product-stock',[\App\Http\Controllers\ProductStockController::class,'store'])->name('product.stock');
 });
 

@@ -27,6 +27,7 @@ return new class extends Migration
                 'balance_transfer',
                 'salary',
                 'advance_salary',
+                'commission_withdraw',
             ])->nullable();
             $table->date('date');
             $table->string('description')->nullable();

@@ -75,11 +75,27 @@
                         <p>Sales</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('sales-commissions.index') }}">
-                        <i class="fas fa-cart-arrow-down"></i>
-                        <p>Sales Commissions</p>
+
+                <li class="nav-item submenu">
+                    <a data-bs-toggle="collapse" href="#Commission">
+                        <i class="fas fa-money-check"></i>
+                        <p>Commission</p>
+                        <span class="caret"></span>
                     </a>
+                    <div class="collapse" id="Commission">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('sales-commissions.index') }}">
+                                    <span class="sub-item">Sales Commissions</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('commission-withdraw.index') }}">
+                                    <span class="sub-item">Commission Withdraw</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('assets.index') }}">
