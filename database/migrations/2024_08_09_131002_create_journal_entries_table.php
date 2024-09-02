@@ -24,6 +24,7 @@ return new class extends Migration
                 'income',
                 'asset',
                 'opening_balance',
+                'balance_transfer',
                 'salary',
                 'advance_salary',
             ])->nullable();

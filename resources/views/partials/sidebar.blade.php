@@ -75,7 +75,12 @@
                         <p>Sales</p>
                     </a>
                 </li>
-
+                <li class="nav-item">
+                    <a href="{{ route('sales-commissions.index') }}">
+                        <i class="fas fa-cart-arrow-down"></i>
+                        <p>Sales Commissions</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="{{ route('assets.index') }}">
                         <i class="fas fa-cart-arrow-down"></i>
@@ -117,6 +122,12 @@
                                     <span class="sub-item">Accounts</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('balance_transfers.index') }}">
+                                    <span class="sub-item">Balance Transfer</span>
+                                </a>
+                            </li>
+
                             <li>
                                 <a href="{{ route('journals.index') }}">
                                     <span class="sub-item">Journal</span>

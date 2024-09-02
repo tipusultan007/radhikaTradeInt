@@ -4,6 +4,8 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdvanceSalaryController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\BalanceSheetController;
+use App\Http\Controllers\BalanceTransferController;
+use App\Http\Controllers\CommissionWithdrawController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\ExpenseCategoryController;
@@ -72,6 +74,8 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
 
     // web.php
     Route::get('/get-customers', [CustomerController::class, 'getCustomers']);
+    Route::resource('balance_transfers', BalanceTransferController::class);
 
+    Route::resource('commission-withdraw',CommissionWithdrawController::class);
 });
 

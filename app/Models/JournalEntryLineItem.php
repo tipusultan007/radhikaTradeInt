@@ -47,4 +47,23 @@ class JournalEntryLineItem extends Model
             ->where('journal_entry_id', $this->journal_entry_id)
             ->delete();
     }
+
+    public static function getTotalPaidCommission(int $customerId = null): float
+    {
+        $commissionAccount = Account::where('type', 'liability')
+            ->where('name', 'Sales Commission')
+            ->first();
+
+        $query = self::where('account_id', $commissionAccount->id);
+
+        // If a customer_id is provided, filter by customer_id
+        if ($customerId !== null) {
+            $query->whereHas('journalEntry', function ($q) use ($customerId) {
+                $q->where('customer_id', $customerId);
+            });
+        }
+
+        // Sum the debit values for the given account_id and customer_id
+        return $query->sum('debit');
+    }
 }

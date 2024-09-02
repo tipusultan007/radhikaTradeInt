@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\SaleCommission;
 use Illuminate\Http\Request;
 
@@ -12,8 +13,9 @@ class SaleCommissionController extends Controller
      */
     public function index()
     {
+        $accounts = Account::where('type','asset')->get();
         $salesCommissions = SaleCommission::orderbyDesc('created_at')->paginate(10);
-        return view('sales_commissions.index', compact('salesCommissions'));
+        return view('sales_commissions.index', compact('salesCommissions','accounts'));
     }
 
     /**
@@ -63,4 +65,5 @@ class SaleCommissionController extends Controller
     {
         //
     }
+
 }

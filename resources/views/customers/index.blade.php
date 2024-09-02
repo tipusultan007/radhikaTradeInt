@@ -23,6 +23,7 @@
                         <th>Address</th>
                         <th>Type</th>
                         <th>Balance</th>
+                        <th>Commission</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -62,6 +63,7 @@
                                 <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $customer->type)) }}</span>
                             </td>
                             <td>{{ $customer->balance }}</td>
+                            <td>{{ $customer->commission }}</td>
                             <td>
                                 <a href="{{ route('customers.show', $customer->id) }}" class="btn btn-primary btn-icon btn-sm">
                                     <i class="fas fa-eye"></i>

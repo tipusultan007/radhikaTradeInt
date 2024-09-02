@@ -29,11 +29,17 @@
                 <select name="customer_id" id="customer_id" class="form-select select2" required>
                 </select>
             </div>
-
+@php
+$agents = \App\Models\Customer::where('type','commission_agent')->get();
+@endphp
             <div class="col-md-3 form-group referrer" style="display: none">
                 <label for="referrer_id">Referrer</label>
                 <select name="referrer_id" id="referrer_id" class="form-select select2">
-
+                    <option value=""></option>
+                    @forelse($agents as $agent)
+                        <option value="{{ $agent->id }}">{{ $agent->name }}</option>
+                    @empty
+                    @endforelse
                 </select>
             </div>
         </div>

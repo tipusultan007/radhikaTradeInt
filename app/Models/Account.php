@@ -74,4 +74,13 @@ class Account extends Model
         return $debits - $credits;
     }
 
+    public function balanceTransfersFrom()
+    {
+        return $this->hasMany(BalanceTransfer::class, 'from_account_id');
+    }
+
+    public function balanceTransfersTo()
+    {
+        return $this->hasMany(BalanceTransfer::class, 'to_account_id');
+    }
 }
