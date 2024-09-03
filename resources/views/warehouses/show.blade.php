@@ -111,7 +111,6 @@
                     <form id="editStockForm" action="{{ route('product-stock.update', ['product_stock' => ':id']) }}" method="POST" class="mt-4">
                         @csrf
                         @method('PUT')
-                        <input type="hidden" name="warehouse_id" id="warehouse_id" value="{{ $stock->warehouse_id }}">
                         <div class="row">
                             <div class="form-group col-md-6">
                                 <label for="date" class="form-label">Date:</label>
