@@ -87,7 +87,7 @@
                     <th>Quantity</th>
                 </tr>
                 </thead>
-                @forelse($saleItems as $item)
+                {{--@forelse($saleItems as $item)
                 <tr>
                     <td>{{ $item->sale->date->format('d/m/Y') }}</td>
                     <td><a href="{{ route('sales.show', $item->sale_id) }}" class="badge bg-primary">{{ $item->sale->invoice_no }}</a></td>
@@ -95,7 +95,7 @@
                     <td>{{ $item->quantity }}</td>
                 </tr>
                 @empty
-                @endforelse
+                @endforelse--}}
             </table>
         </div>
     </div>
