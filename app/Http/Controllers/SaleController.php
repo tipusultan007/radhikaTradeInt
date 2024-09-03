@@ -243,6 +243,7 @@ class SaleController extends Controller
                     $warehouse->stock += $detail->quantity;
                     $warehouse->save();
                 }
+                $detail->delete();
             }
 
             $sale->journalEntry->lineItems()->delete();
