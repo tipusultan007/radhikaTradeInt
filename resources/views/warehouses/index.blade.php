@@ -70,7 +70,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('product.stock') }}" method="POST" class="mt-4">
+                    <form action="{{ route('product-stock.store') }}" method="POST" class="mt-4">
                         @csrf
                         <div class="row">
                             <input type="hidden" name="warehouse_id" id="warehouse_id">

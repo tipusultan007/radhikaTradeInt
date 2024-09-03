@@ -15,6 +15,7 @@ use App\Http\Controllers\JournalController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductStockController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryIncrementController;
@@ -77,7 +78,6 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
     Route::resource('balance_transfers', BalanceTransferController::class);
 
     Route::resource('commission-withdraw',CommissionWithdrawController::class);
-
-    Route::post('product-stock',[\App\Http\Controllers\ProductStockController::class,'store'])->name('product.stock');
+    Route::resource('product-stock', ProductStockController::class);
 });
 

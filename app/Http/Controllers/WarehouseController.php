@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductStock;
+use App\Models\SaleDetail;
 use App\Models\Warehouse;
 use App\Models\PackagingType;
 use Illuminate\Http\Request;
@@ -18,6 +19,16 @@ class WarehouseController extends Controller
         return view('warehouses.index', compact('warehouses'));
     }
 
+    public function show($id)
+    {
+        $warehouseProduct = Warehouse::with('product', 'packagingType')->find($id);
+        $saleItems = SaleDetail::with('sale')
+            ->where('product_id', $warehouseProduct->product_id)
+            ->where('packaging_type_id', $warehouseProduct->packaging_type_id)
+            ->orderByDesc('created_at')
+            ->get();
+        return view('warehouses.show',compact('warehouseProduct','saleItems'));
+    }
     // Show the form for adding a product to the warehouse
     public function create()
     {
