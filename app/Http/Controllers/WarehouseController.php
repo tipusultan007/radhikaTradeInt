@@ -26,7 +26,7 @@ class WarehouseController extends Controller
         $soldItems = SaleDetail::where('product_id', $warehouseProduct->product_id)
             ->where('packaging_type_id', $warehouseProduct->packaging_type_id)
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(10);
 
         return view('warehouses.show',compact('warehouseProduct','soldItems'));
     }

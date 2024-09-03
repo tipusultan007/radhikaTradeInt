@@ -97,6 +97,7 @@
                 @empty
                 @endforelse
             </table>
+            {{ $soldItems->links() }}
         </div>
     </div>
 
