@@ -82,20 +82,20 @@
                 <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Invoice</th>
+                    <th class="text-center">Invoice</th>
                     <th>Customer</th>
-                    <th>Quantity</th>
+                    <th class="text-center">Quantity</th>
                 </tr>
                 </thead>
-                {{--@forelse($saleItems as $item)
+                @forelse($soldItems as $item)
                 <tr>
                     <td>{{ $item->sale->date->format('d/m/Y') }}</td>
-                    <td><a href="{{ route('sales.show', $item->sale_id) }}" class="badge bg-primary">{{ $item->sale->invoice_no }}</a></td>
+                    <td class="text-center"><a href="{{ route('sales.show', $item->sale_id) }}" class="badge text-white bg-secondary">#{{ $item->sale->invoice_no }}</a></td>
                     <td>{{ $item->sale->customer->name }}</td>
-                    <td>{{ $item->quantity }}</td>
+                    <td class="text-center">{{ $item->quantity }}</td>
                 </tr>
                 @empty
-                @endforelse--}}
+                @endforelse
             </table>
         </div>
     </div>

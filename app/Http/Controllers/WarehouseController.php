@@ -22,12 +22,12 @@ class WarehouseController extends Controller
     public function show($id)
     {
         $warehouseProduct = Warehouse::with('product', 'packagingType')->find($id);
-        $saleItems = SaleDetail::with('sale')
+        $soldItems = SaleDetail::with('sale')
             ->where('product_id', $warehouseProduct->product_id)
             ->where('packaging_type_id', $warehouseProduct->packaging_type_id)
             ->orderByDesc('created_at')
             ->get();
-        return view('warehouses.show',compact('warehouseProduct','saleItems'));
+        return view('warehouses.show',compact('warehouseProduct','soldItems'));
     }
     // Show the form for adding a product to the warehouse
     public function create()
