@@ -11,6 +11,8 @@ use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InvestmentController;
+use App\Http\Controllers\InvestmentWithdrawController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PermissionController;
@@ -79,5 +81,10 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
 
     Route::resource('commission-withdraw',CommissionWithdrawController::class);
     Route::resource('product-stock', ProductStockController::class);
+
+    Route::resource('investments', InvestmentController::class);
+    Route::resource('investment_withdraws', InvestmentWithdrawController::class);
+
+
 });
 

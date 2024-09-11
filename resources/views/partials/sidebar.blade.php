@@ -97,6 +97,27 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item submenu">
+                    <a data-bs-toggle="collapse" href="#Investments">
+                        <i class="fas fa-dollar-sign"></i>
+                        <p>Investments</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="Investments">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('investments.index') }}">
+                                    <span class="sub-item">Investments</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('investment_withdraws.index') }}">
+                                    <span class="sub-item">Investment Withdraws</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
                 <li class="nav-item">
                     <a href="{{ route('assets.index') }}">
                         <i class="fas fa-cart-arrow-down"></i>
