@@ -51,7 +51,7 @@
                     <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $sale->customer->type)) }}</span>
                 </td>
                 <td class="text-end">{{ $sale->total }}</td>
-                <td class="text-end">
+                <td class="text-end" style="width: 150px">
                     <button class="btn btn-success make-deliver" data-id="{{ $sale->id }}">
                         <i class="fas fa-truck"></i> Deliver
                     </button>
