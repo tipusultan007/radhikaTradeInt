@@ -76,6 +76,14 @@
                     </a>
                 </li>
 
+                @if(auth()->id() == 2)
+                <li class="nav-item">
+                    <a href="{{ route('pending-sales') }}">
+                        <i class="fas fa-cart-arrow-down"></i>
+                        <p>Pending Sales</p>
+                    </a>
+                </li>
+                @endif
                 <li class="nav-item submenu">
                     <a data-bs-toggle="collapse" href="#Commission">
                         <i class="fas fa-money-check"></i>
