@@ -53,7 +53,7 @@
                 <td class="text-end">{{ $sale->total }}</td>
                 <td class="text-end">
                     <button class="btn btn-success make-deliver" data-id="{{ $sale->id }}">
-                        <i class="fas fa-truck"></i> Make it Deliver
+                        <i class="fas fa-truck"></i> Deliver
                     </button>
                 </td>
 
