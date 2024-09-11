@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('invoice_no')->nullable();
             $table->unsignedBigInteger('referrer_id')->nullable();
             $table->unsignedBigInteger('account_id')->nullable();
+            $table->unsignedBigInteger('status_updated_by')->nullable();
             $table->decimal('subtotal', 8, 2);
             $table->decimal('discount', 8, 2)->nullable();
             $table->decimal('customer_delivery_cost')->nullable();
@@ -27,6 +28,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('note')->nullable();
             $table->text('payment_details')->nullable();
+            $table->enum('status', ['pending', 'delivered'])->default('pending');
             $table->timestamps();
         });
     }

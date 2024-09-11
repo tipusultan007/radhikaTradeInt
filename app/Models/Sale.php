@@ -22,7 +22,9 @@ class Sale extends Model
         'total',
         'note',
         'date',
-        'payment_details'
+        'payment_details',
+        'status',
+        'status_updated_by',
     ];
 
     protected $casts = [
@@ -48,5 +50,10 @@ class Sale extends Model
     public function journalEntry()
     {
         return $this->morphOne(JournalEntry::class, 'journalable');
+    }
+
+    public function statusUpdatedBy()
+    {
+        return $this->belongsTo(User::class,'status_updated_by');
     }
 }

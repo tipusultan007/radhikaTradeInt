@@ -51,6 +51,16 @@
                     <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $sale->customer->type)) }}</span>
                 </td>
                 <td class="text-end">{{ $sale->total }}</td>
+                <td class="text-center">
+                    @if($sale->status === 'pending')
+                        <i class="fas fa-clock text-warning"></i> <!-- Clock icon for pending status -->
+                        <span class="badge bg-warning">Pending</span>
+                    @else
+                        <i class="fas fa-check-circle text-success"></i> <!-- Check-circle icon for delivered status -->
+                        <span class="badge bg-success">Delivered</span>
+                    @endif
+                </td>
+
                 <td class="text-end">
                     <div class="d-flex gap-2">
                         <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-icon btn-info">

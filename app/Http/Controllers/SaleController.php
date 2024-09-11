@@ -21,6 +21,22 @@ class SaleController extends Controller
         return view('sales.index', compact('sales'));
     }
 
+    public function pendingSales()
+    {
+        $sales = Sale::with('details.product', 'details.packagingType', 'customer')
+            ->where('status','pending')->orderByDesc('date')->paginate(10);
+        return view('sales.pending', compact('sales'));
+    }
+
+    public function deliver(Request $request, Sale $sale)
+    {
+        $sale->status = 'delivered';
+        $sale->status_updated_by = auth()->id();
+        $sale->save();
+
+        return response()->json(['success' => true]);
+    }
+
     // Show a single sale
     public function show($id)
     {
