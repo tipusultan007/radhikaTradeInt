@@ -37,7 +37,7 @@
 <div class="wrapper">
     @include('partials.sidebar')
     <div class="main-panel">
-        <div class="main-header">
+        <div class="main-header no-print">
             <div class="main-header-logo">
                 <!-- Logo Header -->
                 <div class="logo-header" data-background-color="dark">
@@ -419,7 +419,7 @@
 
         <div class="container">
             <div class="page-inner">
-                <div class="page-header justify-content-between">
+                <div class="page-header justify-content-between no-print">
                     <h3 class="fw-bold mb-0">@yield('title')</h3>
                     @yield('create-button')
                 </div>

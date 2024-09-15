@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<div class="sidebar" data-background-color="dark">
+<div class="sidebar no-print" data-background-color="dark">
     <div class="sidebar-logo">
         <!-- Logo Header -->
         <div class="logo-header" data-background-color="dark">
@@ -76,11 +76,12 @@
                     </a>
                 </li>
 
-                @if(auth()->id() == 2)
+                @if(auth()->id() == 2 || auth()->id() == 1)
                 <li class="nav-item">
                     <a href="{{ route('pending-sales') }}">
                         <i class="fas fa-cart-arrow-down"></i>
-                        <p>Pending Sales</p>
+                        <p>Pending Sales</p> <span class="badge badge-warning">{{ \App\Models\Sale::pendingSale() }}</span>
+                        <span class="badge badge-info">{{ \App\Models\Sale::dispatchedSale() }}</span>
                     </a>
                 </li>
                 @endif

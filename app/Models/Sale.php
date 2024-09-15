@@ -56,4 +56,14 @@ class Sale extends Model
     {
         return $this->belongsTo(User::class,'status_updated_by');
     }
+
+    public static function pendingSale()
+    {
+        return Sale::where('status','pending')->count();
+    }
+
+    public static function dispatchedSale()
+    {
+        return Sale::where('status','dispatched')->count();
+    }
 }

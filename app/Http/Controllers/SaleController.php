@@ -24,7 +24,7 @@ class SaleController extends Controller
     public function pendingSales()
     {
         $sales = Sale::with('details.product', 'details.packagingType', 'customer')
-            ->where('status','pending')->orderByDesc('date')->paginate(10);
+            ->whereIn('status',['pending','dispatched'])->orderByDesc('date')->paginate(10);
         return view('sales.pending', compact('sales'));
     }
 
@@ -32,6 +32,14 @@ class SaleController extends Controller
     {
         $sale->status = 'delivered';
         $sale->status_updated_by = auth()->id();
+        $sale->save();
+
+        return response()->json(['success' => true]);
+    }
+    public function dispatch(Request $request, Sale $sale)
+    {
+        $sale->status = 'dispatched';
+        $sale->status_updated_by = auth()->id(); // Optionally track who updated it
         $sale->save();
 
         return response()->json(['success' => true]);

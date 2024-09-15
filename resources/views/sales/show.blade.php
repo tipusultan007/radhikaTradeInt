@@ -4,14 +4,27 @@
 
 @section('content')
 
+    <style>
+        .bank-information table, .bank-information td, .bank-information th {
+            border: 1px solid #ccc;
+            padding: 2px 5px;
+        }
+        table.bank-information {
+            width: 85%;
+        }
+        .bank-information table {
+            border-collapse: collapse;
+        }
+    </style>
     <div class="row">
         <div class="col-md-12">
             <div class="card card-invoice">
                 <div class="card-header pb-0">
                     <div class="d-flex gap-4 justify-content-start align-items-center">
-                            <div class="invoice-logo">
-                                <img class="img-fluid" width="150" src="{{asset('assets/img/radhikas-logo.png')}}" alt="company logo">
-                            </div>
+                        <div class="invoice-logo">
+                            <img class="img-fluid" width="150" src="{{asset('assets/img/radhikas-logo.png')}}"
+                                 alt="company logo">
+                        </div>
                         <div class="invoice-description">
                             <h3 class="mb-1 text-uppercase">Radhikas Trade International</h3>
                             <p class="mb-0">88/89, Sadarghat Road, Chattogram, Bangladesh 4000</p>
@@ -79,111 +92,72 @@
                 </div>
                 <div class="card-footer">
                     <div class="row">
-                        <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
+                        <div class="col-sm-7 col-md-7 mb-3 mb-md-0 transfer-to">
+                            <h6><strong>Bkash: 01852-173672 </strong><small>(Personal)</small></h6>
+                            <table class="bank-information">
+                                <thead>
+                                <tr>
+                                    <th colspan="2" class="text-center">Company Bank Information</th>
+                                </tr>
+                                </thead>
+                                <tr>
+                                    <th>Bank Name</th>
+                                    <td>Southeast Bank PLC</td>
+                                </tr>
+                                <tr>
+                                    <th>Account Name</th>
+                                    <td>Radhikas Trade International</td>
+                                </tr>
+                                <tr>
+                                    <th>Account No</th>
+                                    <td>000311100027215</td>
+                                </tr>
+                                <tr>
+                                    <th>Branch Name</th>
+                                    <td>Agrabad, Chattogram, Bangladesh</td>
+                                </tr>
+                                <tr>
+                                    <th>Swift Code</th>
+                                    <td>SEBDBDDHAGR</td>
+                                </tr>
+                                <tr>
+                                    <th>Account Type</th>
+                                    <td>CD</td>
+                                </tr>
+                            </table>
                             @if($sale->account_id != '')
-                            <h5 class="sub">Payment VIA - {{ $sale->account->name }}</h5>
-                            @if($sale->payment_details != '')
-                            <div class="account-transfer">
-                                <div><span>Details:</span><span>{{ $sale->payment_details }}</span></div>
-                            </div>
+                                <h5 class="sub">Payment VIA - {{ $sale->account->name }}</h5>
+                                @if($sale->payment_details != '')
+                                    <div class="account-transfer">
+                                        <div><span>Details:</span><span>{{ $sale->payment_details }}</span></div>
+                                    </div>
                                 @endif
                             @endif
                         </div>
-                        <div class="col-sm-5 col-md-7 transfer-total">
+                        <div class="col-sm-5 col-md-5 transfer-total">
                             <h5 class="sub">Total Amount</h5>
                             <div class="price">{{ $sale->total }}</div>
                         </div>
                     </div>
                     <div class="separator-solid"></div>
                     @if($sale->note !='')
-                    <h6 class="text-uppercase mt-4 mb-3 fw-bold">
-                        Notes
-                    </h6>
-                    <p class="text-muted mb-0">
-{{ $sale->note }}
-                    </p>
+                        <h6 class="text-uppercase mt-4 mb-3 fw-bold">
+                            Notes
+                        </h6>
+                        <p class="text-muted mb-0">
+                            {{ $sale->note }}
+                        </p>
                     @endif
                 </div>
             </div>
         </div>
     </div>
-    {{--<div class="card">
-        <div class="card-header mb-0">
-            <div class="d-flex justify-content-between">
-                <h4 class="card-title mb-0">Sale Details</h4>
-                <a href="{{ route('sales.index') }}" class="btn btn-secondary">Back to Sales</a>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>Customer Information</h5>
-                    <p><strong>Name:</strong> {{ $sale->customer->name }}</p>
-                    <p><strong>Address:</strong> {{ $sale->customer->address }}</p>
-                    <p><strong>Phone:</strong> {{ $sale->customer->phone }}</p>
-                </div>
-                <div class="col-md-6">
-                    <h5>Sale Information</h5>
-                    <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($sale->date)->format('d/m/Y') }}</p>
-                    <p><strong>Subtotal:</strong> {{ number_format($sale->subtotal, 2) }}</p>
-                    <p><strong>Customer Delivery Cost:</strong> {{ number_format($sale->customer_delivery_cost, 2) }}</p>
-                    <p><strong>Owner Delivery Cost:</strong> {{ number_format($sale->owner_delivery_cost, 2) }}</p>
-                    <p><strong>Discount:</strong> {{ number_format($sale->discount, 2) }}</p>
-                    <p><strong>Total:</strong> {{ number_format($sale->total, 2) }}</p>
-                    <p><strong>Paid Amount:</strong> {{ number_format($sale->paid_amount, 2) }}</p>
-                    <p><strong>Note:</strong> {{ $sale->note }}</p>
-                </div>
-            </div>
+    <div class="text-end no-print mt-3">
+        <button type="button" class="btn btn-primary" onclick="javascript:window.print();">
+            <!-- Download SVG icon from http://tabler-icons.io/i/printer -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2"></path><path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4"></path><path d="M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z"></path></svg>
+            Print Invoice
+        </button>
+    </div>
 
-            <h5 class="mt-4">Sale Details</h5>
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Packaging Type</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($sale->details as $detail)
-                    <tr>
-                        <td>{{ $detail->product->name }}</td>
-                        <td>{{ $detail->packagingType->type }}</td>
-                        <td>{{ $detail->quantity }}</td>
-                        <td>{{ number_format($detail->price, 2) }}</td>
-                        <td>{{ number_format($detail->quantity * $detail->price, 2) }}</td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-
-            <h5 class="mt-4">Journal Entry</h5>
-            @if($sale->journalEntry)
-                <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($sale->journalEntry->date)->format('d/m/Y') }}</p>
-                <p><strong>Description:</strong> {{ $sale->journalEntry->description }}</p>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Account</th>
-                        <th>Debit</th>
-                        <th>Credit</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($sale->journalEntry->lineItems as $lineItem)
-                        <tr>
-                            <td>{{ $lineItem->account->name }}</td>
-                            <td>{{ number_format($lineItem->debit, 2) }}</td>
-                            <td>{{ number_format($lineItem->credit, 2) }}</td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
-            @else
-                <p>No journal entry found for this sale.</p>
-            @endif
-        </div>
-    </div>--}}
 @endsection

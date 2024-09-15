@@ -28,7 +28,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('note')->nullable();
             $table->text('payment_details')->nullable();
-            $table->enum('status', ['pending', 'delivered'])->default('pending');
+            $table->enum('status', ['pending','dispatched', 'delivered'])->default('pending');
             $table->timestamps();
         });
     }

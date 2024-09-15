@@ -55,6 +55,9 @@
                     @if($sale->status === 'pending')
                         <i class="fas fa-clock text-warning"></i> <!-- Clock icon for pending status -->
                         <span class="badge bg-warning">Pending</span>
+                    @elseif($sale->status === 'dispatched')
+                        <i class="fas fa-box text-info"></i> <!-- Clock icon for pending status -->
+                        <span class="badge bg-info">Dispatched</span>
                     @else
                         <i class="fas fa-check-circle text-success"></i> <!-- Check-circle icon for delivered status -->
                         <span class="badge bg-success">Delivered</span>
@@ -63,6 +66,9 @@
 
                 <td class="text-end">
                     <div class="d-flex gap-2">
+                        <a href="{{ route('invoice.pdf', $sale->id) }}" class="btn btn-primary">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </a>
                         <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-icon btn-info">
                             <i class="fas fa-eye"></i>
                         </a>

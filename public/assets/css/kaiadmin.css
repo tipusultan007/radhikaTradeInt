@@ -4776,17 +4776,17 @@ label.error {
 .card-invoice .card-body {
   padding: 0;
   border: 0px !important;
-  width: 75%;
+  width: 85%;
   margin: auto; }
 .card-invoice .card-header {
   padding: 50px 0px 20px;
   border: 0px !important;
-  width: 75%;
+  width: 85%;
   margin: auto; }
 .card-invoice .card-footer {
   padding: 5px 0 50px;
   border: 0px !important;
-  width: 75%;
+  width: 85%;
   margin: auto; }
 
 .list-group .list-group-header {

@@ -15,6 +15,7 @@ use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\InvestmentWithdrawController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductStockController;
@@ -87,6 +88,10 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
 
     Route::get('pending-sales',[SaleController::class,'pendingSales'])->name('pending-sales');
     Route::post('/sales/{sale}/deliver', [SaleController::class, 'deliver'])->name('sales.deliver');
+    Route::post('/sales/{sale}/dispatch', [SaleController::class, 'dispatch'])->name('sales.dispatch');
+
+
+    Route::get('/invoice/{id}/pdf', [PdfController::class, 'generateInvoice'])->name('invoice.pdf');
 
 
 });

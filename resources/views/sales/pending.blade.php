@@ -51,10 +51,18 @@
                     <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $sale->customer->type)) }}</span>
                 </td>
                 <td class="text-end">{{ $sale->total }}</td>
-                <td class="text-end" style="width: 150px">
-                    <button class="btn btn-success make-deliver" data-id="{{ $sale->id }}">
-                        <i class="fas fa-truck"></i> Deliver
-                    </button>
+                <td class="text-end">
+                    <div class="d-flex justify-content-end gap-2">
+                       @if($sale->status == 'dispatched')
+                            <button class="btn btn-sm btn-success make-deliver" data-id="{{ $sale->id }}">
+                                <i class="fas fa-truck"></i> Deliver
+                            </button>
+                        @else
+                            <button class="btn btn-sm btn-info make-dispatch" data-id="{{ $sale->id }}">
+                                <i class="fas fa-box"></i> Dispatch
+                            </button>
+                       @endif
+                    </div>
                 </td>
 
             </tr>
@@ -118,6 +126,60 @@
                                         'error'
                                     );
                                     console.error('Error:', error); // Log the error for debugging
+                                });
+                        }
+                    });
+                });
+            });
+
+            // Handle "Dispatch" button click
+            const dispatchButtons = document.querySelectorAll('.make-dispatch');
+            dispatchButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const saleId = this.getAttribute('data-id');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You want to mark this sale as dispatched?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, dispatch it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/admin/sales/${saleId}/dispatch`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ status: 'dispatched' })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire(
+                                            'Dispatched!',
+                                            'The sale has been marked as dispatched.',
+                                            'success'
+                                        );
+                                        location.reload();
+                                    } else {
+                                        Swal.fire(
+                                            'Error!',
+                                            'There was an issue marking the sale as dispatched.',
+                                            'error'
+                                        );
+                                    }
+                                })
+                                .catch(error => {
+                                    Swal.fire(
+                                        'Error!',
+                                        'An error occurred while processing your request. Please try again later.',
+                                        'error'
+                                    );
+                                    console.error('Error:', error);
                                 });
                         }
                     });
