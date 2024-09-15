@@ -66,8 +66,8 @@
 
                 <td class="text-end">
                     <div class="d-flex gap-2">
-                        <a href="{{ route('invoice.pdf', $sale->id) }}" class="btn btn-primary">
-                            <i class="fas fa-file-pdf"></i> PDF
+                        <a href="{{ route('invoice.pdf', $sale->id) }}" class="btn btn-icon btn-danger">
+                            <i class="fas fa-file-pdf"></i>
                         </a>
                         <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-icon btn-info">
                             <i class="fas fa-eye"></i>
