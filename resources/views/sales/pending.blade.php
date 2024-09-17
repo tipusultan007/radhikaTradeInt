@@ -53,7 +53,7 @@
                 <td class="text-end">{{ $sale->total }}</td>
                 <td class="text-end">
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-icon btn-info">
+                        <a target="_blank" href="{{ route('sales.show', $sale->id) }}" class="btn btn-icon btn-secondary">
                             <i class="fas fa-eye"></i>
                         </a>
                        @if($sale->status == 'dispatched')
