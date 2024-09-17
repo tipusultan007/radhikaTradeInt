@@ -153,7 +153,7 @@
         </div>
     </div>
     <div class="text-center no-print mt-3">
-        <a href="{{ route('invoice.pdf', $sale->id) }}" class="btn btn-icon btn-danger">
+        <a href="{{ route('invoice.pdf', $sale->id) }}" class="btn btn-danger">
             <i class="fas fa-file-pdf"></i> Download PDF
         </a>
     </div>
