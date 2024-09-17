@@ -76,7 +76,6 @@
                     </a>
                 </li>
 
-                @if(auth()->id() == 2 || auth()->id() == 1)
                 <li class="nav-item">
                     <a href="{{ route('pending-sales') }}">
                         <i class="fas fa-cart-arrow-down"></i>
@@ -84,7 +83,7 @@
                         <span class="badge badge-info">{{ \App\Models\Sale::dispatchedSale() }}</span>
                     </a>
                 </li>
-                @endif
+
                 <li class="nav-item submenu">
                     <a data-bs-toggle="collapse" href="#Commission">
                         <i class="fas fa-money-check"></i>

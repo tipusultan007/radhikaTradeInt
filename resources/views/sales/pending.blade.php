@@ -53,6 +53,9 @@
                 <td class="text-end">{{ $sale->total }}</td>
                 <td class="text-end">
                     <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-icon btn-info">
+                            <i class="fas fa-eye"></i>
+                        </a>
                        @if($sale->status == 'dispatched')
                             <button class="btn btn-sm btn-success make-deliver" data-id="{{ $sale->id }}">
                                 <i class="fas fa-truck"></i> Deliver
