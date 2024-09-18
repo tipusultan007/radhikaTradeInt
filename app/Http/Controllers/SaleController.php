@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleCommission;
 use App\Models\SaleDetail;
+use App\Models\User;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,11 +16,40 @@ use Illuminate\Support\Facades\DB;
 class SaleController extends Controller
 {
     // List all sales
-    public function index()
+    public function index(Request $request)
     {
-        $sales = Sale::with('details.product', 'details.packagingType', 'customer')->orderByDesc('date')->paginate(10);
-        return view('sales.index', compact('sales'));
+        $query = Sale::query();
+
+        // Filter by customer_id
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->input('customer_id'));
+        }
+
+        // Filter by invoice_no
+        if ($request->filled('invoice_no')) {
+            $query->where('invoice_no', 'like', '%' . $request->input('invoice_no') . '%');
+        }
+
+        // Filter by date range
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
+        }
+
+        // Filter by created_by (user who created the sale)
+        if ($request->filled('created_by')) {
+            $query->where('created_by', $request->input('created_by'));
+        }
+
+        // Paginate the results
+        $sales = $query->paginate(10);
+
+        $customers = Customer::all();
+        $users = User::all();
+
+        // Return view with data
+        return view('sales.index', compact('sales', 'customers', 'users'));
     }
+
 
     public function pendingSales()
     {

@@ -12,6 +12,34 @@
         </div>
     @endif
 
+    <form class="row" method="GET" action="{{ route('customers.index') }}">
+        <div class="col-md-3 form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" name="name" value="{{ request('name') }}">
+        </div>
+        <div class="col-md-3 form-group">
+            <label for="phone">Phone:</label>
+            <input type="text" class="form-control" name="phone" value="{{ request('phone') }}">
+        </div>
+
+        <div class="col-md-3 form-group">
+            <label for="type">Type:</label>
+            <select class="form-control select2" name="type">
+                <option value="">--Select Type--</option>
+                <option value="dealer" {{ request('type') == 'dealer' ? 'selected' : '' }}>Dealer</option>
+                <option value="commission_agent" {{ request('type') == 'commission_agent' ? 'selected' : '' }}>Commission Agent</option>
+                <option value="retailer" {{ request('type') == 'retailer' ? 'selected' : '' }}>Retailer</option>
+                <option value="wholesale" {{ request('type') == 'wholesale' ? 'selected' : '' }}>Wholesale</option>
+                <option value="retail" {{ request('type') == 'retail' ? 'selected' : '' }}>Retail</option>
+                <option value="customer" {{ request('type') == 'customer' ? 'selected' : '' }}>Customer</option>
+            </select>
+        </div>
+
+       <div class="col-md-3 form-group d-flex align-items-end gap-2">
+           <button class="btn btn-primary" type="submit">Search</button>
+           <a class="btn btn-danger" href="{{ route('customers.index') }}">Reset</a>
+       </div>
+    </form>
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
@@ -83,8 +111,19 @@
                     @endforeach
                     </tbody>
                 </table>
-                {{ $customers->links() }}
+                {{ $customers->withQueryString()->links() }}
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script>
+        $(".select2").select2({
+            theme: "bootstrap",
+            width: '100%',
+            placeholder: '-- Select Type --',
+            allowClear: true
+        })
+    </script>
 @endsection

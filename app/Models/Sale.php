@@ -25,6 +25,7 @@ class Sale extends Model
         'payment_details',
         'status',
         'status_updated_by',
+        'created_by',
     ];
 
     protected $casts = [
@@ -33,6 +34,10 @@ class Sale extends Model
     public function account()
     {
         return $this->belongsTo(Account::class);
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
     public function customer()
     {

@@ -10,11 +10,29 @@ use Illuminate\Http\Request;
 class CustomerController extends Controller
 {
     // List all customers
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::paginate(10);
+        $query = Customer::query();
+
+        // Filter by name
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        // Filter by type
+        if ($request->filled('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
+        // Filter by phone
+        if ($request->filled('phone')) {
+            $query->where('phone', 'like', '%' . $request->input('phone') . '%');
+        }
+
+        $customers = $query->paginate(10);
         return view('customers.index', compact('customers'));
     }
+
 
     // Show the form for creating a new customer
     public function create()

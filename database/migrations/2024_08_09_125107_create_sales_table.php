@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('referrer_id')->nullable();
             $table->unsignedBigInteger('account_id')->nullable();
             $table->unsignedBigInteger('status_updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->decimal('subtotal', 8, 2);
             $table->decimal('discount', 8, 2)->nullable();
             $table->decimal('customer_delivery_cost')->nullable();

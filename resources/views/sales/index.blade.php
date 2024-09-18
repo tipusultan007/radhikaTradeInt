@@ -4,6 +4,57 @@
     <a href="{{ route('sales.create') }}" class="btn btn-primary">Create New Sale</a>
 @endsection
 @section('content')
+    <form method="GET" class="row" action="{{ route('sales.index') }}">
+        <!-- Customer Field -->
+        <div class="form-group col-md-3">
+            <label for="customer_id">Customer:</label>
+            <select name="customer_id" class="form-control select2">
+                <option value="">--Select Customer--</option>
+                @foreach($customers as $customer)
+                    <option value="{{ $customer->id }}" {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
+                        {{ $customer->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Invoice No Field -->
+        <div class="form-group col-md-2">
+            <label for="invoice_no">Invoice No:</label>
+            <input type="text" name="invoice_no" class="form-control" value="{{ request('invoice_no') }}">
+        </div>
+
+        <!-- Start Date Field -->
+        <div class="form-group col-md-2">
+            <label for="start_date">Start Date:</label>
+            <input type="text" name="start_date" class="form-control flatpickr" value="{{ request('start_date') }}">
+        </div>
+
+        <!-- End Date Field -->
+        <div class="form-group col-md-2">
+            <label for="end_date">End Date:</label>
+            <input type="text" name="end_date" class="form-control flatpickr" value="{{ request('end_date') }}">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="created_by">Created By:</label>
+            <select name="created_by" class="form-control select2">
+                <option value="">--Select User--</option>
+                @foreach($users as $user)
+                    <option value="{{ $user->id }}" {{ request('created_by') == $user->id ? 'selected' : '' }}>
+                        {{ $user->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Filter Button -->
+        <div class="form-group col-md-3 align-self-end">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a class="btn btn-danger" href="{{ route('sales.index') }}">Reset</a>
+        </div>
+    </form>
+
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
@@ -12,6 +63,7 @@
             <th>Customer</th>
             <th>Type</th>
             <th class="text-end">Total Amount</th>
+            <th>Status</th>
             <th class="text-end">Actions</th>
         </tr>
         </thead>
@@ -89,5 +141,15 @@
         @endforeach
         </tbody>
     </table>
-    {{ $sales->links() }}
+    {{ $sales->withQueryString()->links() }}
+@endsection
+@section('js')
+    <script>
+        $(".select2").select2({
+            theme: "bootstrap",
+            width: '100%',
+            placeholder: '-- Select Type --',
+            allowClear: true
+        })
+    </script>
 @endsection
