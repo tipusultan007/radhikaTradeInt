@@ -24,12 +24,17 @@ class Sale extends Model
         'date',
         'payment_details',
         'status',
-        'status_updated_by',
+        'dispatched_at',
+        'delivered_at',
+        'dispatched_by',
+        'delivered_by',
         'created_by',
     ];
 
     protected $casts = [
         'date' => 'date',
+        'dispatched_at' => 'date',
+        'delivered_at' => 'date',
     ];
     public function account()
     {
@@ -57,9 +62,14 @@ class Sale extends Model
         return $this->morphOne(JournalEntry::class, 'journalable');
     }
 
-    public function statusUpdatedBy()
+    public function dispatchedBy()
     {
-        return $this->belongsTo(User::class,'status_updated_by');
+        return $this->belongsTo(User::class,'dispatched_by');
+    }
+
+    public function deliveredBy()
+    {
+        return $this->belongsTo(User::class,'delivered_by');
     }
 
     public static function pendingSale()
@@ -70,5 +80,9 @@ class Sale extends Model
     public static function dispatchedSale()
     {
         return Sale::where('status','dispatched')->count();
+    }
+    public static function deliveredSale()
+    {
+        return Sale::where('status','delivered')->count();
     }
 }

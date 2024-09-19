@@ -39,9 +39,12 @@ class SaleController extends Controller
         if ($request->filled('created_by')) {
             $query->where('created_by', $request->input('created_by'));
         }
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
 
         // Paginate the results
-        $sales = $query->paginate(10);
+        $sales = $query->orderByDesc('date')->paginate(10);
 
         $customers = Customer::all();
         $users = User::all();
@@ -54,14 +57,30 @@ class SaleController extends Controller
     public function pendingSales()
     {
         $sales = Sale::with('details.product', 'details.packagingType', 'customer')
-            ->whereIn('status',['pending','dispatched'])->orderByDesc('date')->paginate(10);
+            ->where('status','pending')->orderByDesc('date')->paginate(10);
         return view('sales.pending', compact('sales'));
     }
+
+    public function dispatchedSales()
+    {
+        $sales = Sale::with('details.product', 'details.packagingType', 'customer')
+            ->where('status','dispatched')->orderByDesc('date')->paginate(10);
+        return view('sales.dispatched', compact('sales'));
+    }
+
+    public function deliveredSales()
+    {
+        $sales = Sale::with('details.product', 'details.packagingType', 'customer')
+            ->where('status','delivered')->orderByDesc('date')->paginate(10);
+        return view('sales.delivered', compact('sales'));
+    }
+
 
     public function deliver(Request $request, Sale $sale)
     {
         $sale->status = 'delivered';
-        $sale->status_updated_by = auth()->id();
+        $sale->delivered_by = auth()->id();
+        $sale->delivered_at = now();
         $sale->save();
 
         return response()->json(['success' => true]);
@@ -69,11 +88,13 @@ class SaleController extends Controller
     public function dispatch(Request $request, Sale $sale)
     {
         $sale->status = 'dispatched';
-        $sale->status_updated_by = auth()->id(); // Optionally track who updated it
+        $sale->dispatched_by = auth()->id(); // Optionally track who updated it
+        $sale->dispatched_at = now();
         $sale->save();
 
         return response()->json(['success' => true]);
     }
+
 
     // Show a single sale
     public function show($id)
@@ -106,51 +127,7 @@ class SaleController extends Controller
         // Return the view with the sale data
         return view('sales.edit', compact('sale', 'customers', 'products', 'packagingTypes','accounts'));
     }
-    // Create a new sale
-    /*public function store(Request $request)
-    {
-        // Validate the request data
-        $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'total' => 'required|numeric',
-            'items' => 'required|array',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.packaging_type_id' => 'required|exists:packaging_types,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.price' => 'required|numeric|min:0',
-        ]);
 
-        $data = $request->all();
-        // Create the Sale entry
-        $sale = Sale::create($data);
-
-        // Loop through the sale items and add them to the SaleDetail table
-        foreach ($validated['items'] as $item) {
-            SaleDetail::create([
-                'sale_id' => $sale->id,
-                'product_id' => $item['product_id'],
-                'packaging_type_id' => $item['packaging_type_id'],
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-            ]);
-
-            // Update the warehouse stock
-            $warehouse = Warehouse::where('product_id', $item['product_id'])
-                ->where('packaging_type_id', $item['packaging_type_id'])
-                ->first();
-            if ($warehouse) {
-                $warehouse->stock -= $item['quantity'];
-                if ($warehouse->stock < 0) {
-                    return redirect()->back()->withErrors(['message' => 'Insufficient stock for this sale']);
-                }
-                $warehouse->save();
-            } else {
-                return redirect()->back()->withErrors(['message' => 'No stock found for the specified product and packaging type']);
-            }
-        }
-
-        return redirect()->route('sales.index')->with('success', 'Sale recorded successfully');
-    }*/
     public function store(Request $request)
     {
         // Validate the request data
@@ -437,6 +414,12 @@ class SaleController extends Controller
                 ]);
             }
         }
+    }
+
+    public function details($id)
+    {
+        $sale = Sale::with('details.product', 'details.packagingType', 'customer')->findOrFail($id);
+        return view('sales.partials.details', compact('sale'));
     }
 
 }

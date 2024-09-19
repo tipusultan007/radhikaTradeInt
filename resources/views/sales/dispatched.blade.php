@@ -1,17 +1,19 @@
 @extends('layouts.app')
-@section('title','Pending Sales')
+@section('title','Dispatched Sales')
 @section('create-button')
     <a href="{{ route('sales.create') }}" class="btn btn-primary">Create New Sale</a>
 @endsection
 @section('content')
-    <table class="table table-striped table-bordered table-danger">
+    <table class="table table-striped table-bordered table-info">
         <thead>
         <tr>
             <th>Date</th>
-            <th>Invoice #</th>
+            <th>Inv #</th>
             <th>Customer</th>
             <th>Type</th>
-            <th class="text-end">Total Amount</th>
+            <th class="text-end">Total</th>
+            <th>Dispatched At</th>
+            <th>Dispatched By</th>
             <th class="text-end">Actions</th>
         </tr>
         </thead>
@@ -51,6 +53,8 @@
                     <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $sale->customer->type)) }}</span>
                 </td>
                 <td class="text-end">{{ $sale->total }}</td>
+                <td>{{ $sale->dispatched_at->format('d/m/Y') }}</td>
+                <td>{{ $sale->dispatchedBy->name }}</td>
                 <td class="text-end">
                     <div class="d-flex justify-content-end gap-2">
                         <button class="btn btn-primary btn-details" data-id="{{ $sale->id }}">Details</button>

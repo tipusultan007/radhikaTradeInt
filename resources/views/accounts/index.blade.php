@@ -31,13 +31,15 @@
                         <td>{{ $account->code }}</td>
                         <td class="text-end">{{ number_format($account->balance(), 2) }}</td>
                         <td>
-                            <a href="{{ route('accounts.show', $account->id) }}" class="btn btn-primary btn-sm">View</a>
-                            <a href="{{ route('accounts.edit', $account->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('accounts.destroy', $account->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                            </form>
+                            <div class="d-flex gap-1">
+                                <a href="{{ route('accounts.show', $account->id) }}" class="btn btn-primary btn-sm">View</a>
+                                <a href="{{ route('accounts.edit', $account->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                <form action="{{ route('accounts.destroy', $account->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

@@ -1,17 +1,19 @@
 @extends('layouts.app')
-@section('title','Pending Sales')
+@section('title','Delivered Sales')
 @section('create-button')
     <a href="{{ route('sales.create') }}" class="btn btn-primary">Create New Sale</a>
 @endsection
 @section('content')
-    <table class="table table-striped table-bordered table-danger">
+    <table class="table table-striped table-bordered table-success">
         <thead>
         <tr>
             <th>Date</th>
             <th>Invoice #</th>
             <th>Customer</th>
             <th>Type</th>
-            <th class="text-end">Total Amount</th>
+            <th class="text-end">Total</th>
+            <th>Delivered At</th>
+            <th>Delivered By</th>
             <th class="text-end">Actions</th>
         </tr>
         </thead>
@@ -51,21 +53,11 @@
                     <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $sale->customer->type)) }}</span>
                 </td>
                 <td class="text-end">{{ $sale->total }}</td>
+                <td>{{ $sale->delivered_at?$sale->delivered_at->format('d/m/Y'):'-' }}</td>
+                <td>{{ $sale->deliveredBy->name??'-' }}</td>
                 <td class="text-end">
                     <div class="d-flex justify-content-end gap-2">
                         <button class="btn btn-primary btn-details" data-id="{{ $sale->id }}">Details</button>
-                        {{--<a target="_blank" href="{{ route('sales.show', $sale->id) }}" class="btn btn-icon btn-secondary">
-                            <i class="fas fa-eye"></i>
-                        </a>--}}
-                       @if($sale->status == 'dispatched')
-                            <button class="btn btn-sm btn-success make-deliver" data-id="{{ $sale->id }}">
-                                <i class="fas fa-truck"></i> Deliver
-                            </button>
-                        @else
-                            <button class="btn btn-sm btn-info make-dispatch" data-id="{{ $sale->id }}">
-                                <i class="fas fa-box"></i> Dispatch
-                            </button>
-                       @endif
                     </div>
                 </td>
 

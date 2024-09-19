@@ -40,15 +40,15 @@
         <div style="width: 100% !important;  margin-bottom: 40px;">
             <div style="float: left; width: 33.33%; padding-right: 15px;">
                 <h5 style="margin-bottom: 0px; font-weight: bold;">Date</h5>
-                <p>{{ $sale->date->format('M d, Y') }}</p>
+                <p style="margin-top: 0px; font-size: 13px">{{ $sale->date->format('M d, Y') }}</p>
             </div>
             <div style="float: left; width: 33.33%; padding-right: 15px;">
-                <h5 style="margin-bottom: 0px; font-weight: bold;">Invoice ID</h5>
-                <p>#{{ $sale->invoice_no }}</p>
+                <h5 style="margin-bottom: 0px; font-weight: bold;">Invoice No</h5>
+                <p style="margin-top: 0px; font-size: 13px">#{{ $sale->invoice_no }}</p>
             </div>
             <div style="float: left; width: 33.33%; padding-right: 15px;">
                 <h5 style="margin-bottom: 0px; font-weight: bold;">Invoice To</h5>
-                <p>
+                <p style="font-size: 13px;margin-top: 0px">
                     {{ $sale->customer->name }}<br>
                     {{ $sale->customer->address }}<br>
                     {{ $sale->customer->phone }}
@@ -162,8 +162,12 @@
         </div>
 
         @if($sale->note !='')
-            <h6 class="text-uppercase mt-4 mb-3 fw-bold">Notes</h6>
+            <h6 class="text-uppercase mt-4 mb-1 fw-bold">Notes</h6>
             <p class="text-muted mb-0">{{ $sale->note }}</p>
+        @endif
+
+        @if($sale->created_by != '')
+            <p style="margin-top: 30px">Sold By: <strong>{{ $sale->creator->name }}</strong></p>
         @endif
     </div>
 </div>

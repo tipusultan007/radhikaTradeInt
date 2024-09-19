@@ -48,6 +48,16 @@
             </select>
         </div>
 
+        <div class="form-group col-md-3">
+            <label for="status">Status:</label>
+            <select name="status" class="form-control select2">
+                <option value="">--Select Status--</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="dispatched" {{ request('status') == 'dispatched' ? 'selected' : '' }}>Dispatched</option>
+                <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Delivered</option>
+            </select>
+        </div>
+
         <!-- Filter Button -->
         <div class="form-group col-md-3 align-self-end">
             <button type="submit" class="btn btn-primary">Search</button>
@@ -63,6 +73,7 @@
             <th>Customer</th>
             <th>Type</th>
             <th class="text-end">Total Amount</th>
+            <th>Created By</th>
             <th>Status</th>
             <th class="text-end">Actions</th>
         </tr>
@@ -103,6 +114,7 @@
                     <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $sale->customer->type)) }}</span>
                 </td>
                 <td class="text-end">{{ $sale->total }}</td>
+                <td>{{ $sale->creator->name??'-' }}</td>
                 <td class="text-center">
                     @if($sale->status === 'pending')
                         <i class="fas fa-clock text-warning"></i> <!-- Clock icon for pending status -->

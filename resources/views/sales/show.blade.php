@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'Sale Details')
-
+@section('create-button')
+    <a class="btn btn-secondary" href="{{ route('sales.index') }}">Back to Sales</a>
+@endsection
 @section('content')
 
     <style>
@@ -126,7 +128,7 @@
                                 </tr>
                             </table>
                             @if($sale->account_id != '')
-                                <h5 class="sub">Payment VIA - {{ $sale->account->name }}</h5>
+                                <h5 class="sub mt-3">Paid VIA - {{ $sale->account->name }}</h5>
                                 @if($sale->payment_details != '')
                                     <div class="account-transfer">
                                         <div><span>Details:</span><span>{{ $sale->payment_details }}</span></div>
@@ -141,12 +143,16 @@
                     </div>
                     <div class="separator-solid"></div>
                     @if($sale->note !='')
-                        <h6 class="text-uppercase mt-4 mb-3 fw-bold">
+                        <h6 class="text-uppercase mt-4 mb-0 fw-bold">
                             Notes
                         </h6>
                         <p class="text-muted mb-0">
                             {{ $sale->note }}
                         </p>
+                    @endif
+
+                    @if($sale->created_by != '')
+                        <p>Sold By: <strong>{{ $sale->creator->name }}</strong></p>
                     @endif
                 </div>
             </div>

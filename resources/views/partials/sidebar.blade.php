@@ -69,20 +69,42 @@
                         <p>Warehouse</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('sales.index') }}">
-                        <i class="fas fa-cart-arrow-down"></i>
+
+                <li class="nav-item submenu">
+                    <a data-bs-toggle="collapse" href="#Sales">
+                        <i class="fas fa-money-check"></i>
                         <p>Sales</p>
+                        <span class="caret"></span>
                     </a>
+                    <div class="collapse" id="Sales">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('sales.index') }}">
+                                    <span class="sub-item">Sales</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('pending-sales') }}">
+                                    <span class="sub-item">Pending</span> <span class="badge badge-danger">{{ \App\Models\Sale::pendingSale() }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('dispatched-sales') }}">
+                                    <span class="sub-item">Dispatched</span>
+                                    <span class="badge badge-info">{{ \App\Models\Sale::dispatchedSale() }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('delivered-sales') }}">
+                                    <span class="sub-item">Delivered</span>
+                                    <span class="badge badge-success">{{ \App\Models\Sale::deliveredSale() }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('pending-sales') }}">
-                        <i class="fas fa-cart-arrow-down"></i>
-                        <p>Pending Sales</p> <span class="badge badge-warning">{{ \App\Models\Sale::pendingSale() }}</span>
-                        <span class="badge badge-info">{{ \App\Models\Sale::dispatchedSale() }}</span>
-                    </a>
-                </li>
+
 
                 <li class="nav-item submenu">
                     <a data-bs-toggle="collapse" href="#Commission">

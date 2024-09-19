@@ -87,11 +87,15 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
     Route::resource('investment_withdraws', InvestmentWithdrawController::class);
 
     Route::get('pending-sales',[SaleController::class,'pendingSales'])->name('pending-sales');
+    Route::get('dispatched-sales',[SaleController::class,'dispatchedSales'])->name('dispatched-sales');
+    Route::get('delivered-sales',[SaleController::class,'deliveredSales'])->name('delivered-sales');
     Route::post('/sales/{sale}/deliver', [SaleController::class, 'deliver'])->name('sales.deliver');
     Route::post('/sales/{sale}/dispatch', [SaleController::class, 'dispatch'])->name('sales.dispatch');
 
 
     Route::get('/invoice/{id}/pdf', [PdfController::class, 'generateInvoice'])->name('invoice.pdf');
+
+    Route::get('/sale-details/{id}', [SaleController::class, 'details'])->name('sales.details');
 
 
 });
