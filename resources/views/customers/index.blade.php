@@ -3,6 +3,13 @@
 @section('title', 'Customers')
 @section('create-button')
     <a href="{{ route('customers.create') }}" class="btn btn-primary btn-round">Add Customer</a>
+    <a href="{{ request()->fullUrlWithQuery(['export' => 'excel']) }}" class="btn btn-success">
+        <i class="fas fa-file-excel"></i> Download Excel
+    </a>
+    <a href="{{ request()->fullUrlWithQuery(['export' => 'pdf']) }}" class="btn btn-danger">
+        <i class="fas fa-file-pdf"></i> Download PDF
+    </a>
+
 @endsection
 
 @section('content')
@@ -12,34 +19,55 @@
         </div>
     @endif
 
-    <form class="row" method="GET" action="{{ route('customers.index') }}">
-        <div class="col-md-3 form-group">
-            <label for="name">Name:</label>
-            <input type="text" class="form-control" name="name" value="{{ request('name') }}">
-        </div>
-        <div class="col-md-3 form-group">
-            <label for="phone">Phone:</label>
-            <input type="text" class="form-control" name="phone" value="{{ request('phone') }}">
-        </div>
+    <div class="card">
+        <div class="card-body">
+            <form class="row" method="GET" action="{{ route('customers.index') }}">
+                <div class="col-md-3 form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" name="name" value="{{ request('name') }}">
+                </div>
+                <div class="col-md-3 form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="text" class="form-control" name="phone" value="{{ request('phone') }}">
+                </div>
 
-        <div class="col-md-3 form-group">
-            <label for="type">Type:</label>
-            <select class="form-control select2" name="type">
-                <option value="">--Select Type--</option>
-                <option value="dealer" {{ request('type') == 'dealer' ? 'selected' : '' }}>Dealer</option>
-                <option value="commission_agent" {{ request('type') == 'commission_agent' ? 'selected' : '' }}>Commission Agent</option>
-                <option value="retailer" {{ request('type') == 'retailer' ? 'selected' : '' }}>Retailer</option>
-                <option value="wholesale" {{ request('type') == 'wholesale' ? 'selected' : '' }}>Wholesale</option>
-                <option value="retail" {{ request('type') == 'retail' ? 'selected' : '' }}>Retail</option>
-                <option value="customer" {{ request('type') == 'customer' ? 'selected' : '' }}>Customer</option>
-            </select>
-        </div>
+                <div class="col-md-3 form-group">
+                    <label for="type">Type:</label>
+                    <select class="form-control select2" name="type">
+                        <option value="">--Select Type--</option>
+                        <option value="dealer" {{ request('type') == 'dealer' ? 'selected' : '' }}>Dealer</option>
+                        <option value="commission_agent" {{ request('type') == 'commission_agent' ? 'selected' : '' }}>Commission Agent</option>
+                        <option value="retailer" {{ request('type') == 'retailer' ? 'selected' : '' }}>Retailer</option>
+                        <option value="wholesale" {{ request('type') == 'wholesale' ? 'selected' : '' }}>Wholesale</option>
+                        <option value="retail" {{ request('type') == 'retail' ? 'selected' : '' }}>Retail</option>
+                        <option value="customer" {{ request('type') == 'customer' ? 'selected' : '' }}>Customer</option>
+                    </select>
+                </div>
 
-       <div class="col-md-3 form-group d-flex align-items-end gap-2">
-           <button class="btn btn-primary" type="submit">Search</button>
-           <a class="btn btn-danger" href="{{ route('customers.index') }}">Reset</a>
-       </div>
-    </form>
+                <div class="col-md-3 form-group d-flex align-items-end gap-2">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    <a class="btn btn-danger" href="{{ route('customers.index') }}">Reset</a>
+                </div>
+            </form>
+            @if(request()->hasAny(['name', 'phone', 'type']))
+                <div class="alert alert-info">
+                    <strong>Search Results For:</strong>
+                    <ul>
+                        @if(request('name'))
+                            <li><strong>Name:</strong> {{ request('name') }}</li>
+                        @endif
+                        @if(request('phone'))
+                            <li><strong>Phone:</strong> {{ request('phone') }}</li>
+                        @endif
+                        @if(request('type'))
+                            <li><strong>Type:</strong> {{ ucfirst(str_replace('_', ' ', request('type'))) }}</li>
+                        @endif
+                    </ul>
+                </div>
+            @endif
+
+        </div>
+    </div>
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">

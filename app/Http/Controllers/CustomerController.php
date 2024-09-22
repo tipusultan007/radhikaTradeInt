@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CustomersExport;
 use App\Models\Customer;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLineItem;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerController extends Controller
 {
@@ -14,22 +17,31 @@ class CustomerController extends Controller
     {
         $query = Customer::query();
 
-        // Filter by name
+        // Apply filters as before
         if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
         }
 
-        // Filter by type
         if ($request->filled('type')) {
             $query->where('type', $request->input('type'));
         }
 
-        // Filter by phone
         if ($request->filled('phone')) {
             $query->where('phone', 'like', '%' . $request->input('phone') . '%');
         }
 
-        $customers = $query->paginate(10);
+        // Check for export options
+        if ($request->has('export') && $request->export == 'excel') {
+            return Excel::download(new CustomersExport($query), 'customers.xlsx');
+        }
+
+        if ($request->has('export') && $request->export == 'pdf') {
+            $customers = $query->get();
+            $pdf = Pdf::loadView('customers.pdf', compact('customers'));
+            return $pdf->download('customers.pdf');
+        }
+
+        $customers = $query->paginate(100);
         return view('customers.index', compact('customers'));
     }
 

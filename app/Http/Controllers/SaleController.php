@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Exports\SalesExport;
 use App\Models\Account;
 use App\Models\Customer;
 use App\Models\PackagingType;
@@ -10,8 +11,10 @@ use App\Models\SaleCommission;
 use App\Models\SaleDetail;
 use App\Models\User;
 use App\Models\Warehouse;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SaleController extends Controller
 {
@@ -39,12 +42,26 @@ class SaleController extends Controller
         if ($request->filled('created_by')) {
             $query->where('created_by', $request->input('created_by'));
         }
+
+        // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
 
+        // Export to Excel
+        if ($request->query('export') === 'excel') {
+            return Excel::download(new SalesExport($query->get()), 'sales.xlsx');
+        }
+
+        // Export to PDF
+        if ($request->query('export') === 'pdf') {
+            $sales = $query->orderBy('date','asc')->get();
+            $pdf = PDF::loadView('sales.pdf', compact('sales'));
+            return $pdf->download('sales.pdf');
+        }
+
         // Paginate the results
-        $sales = $query->orderByDesc('date')->paginate(10);
+        $sales = $query->orderByDesc('date')->paginate(100);
 
         $customers = Customer::all();
         $users = User::all();
@@ -122,7 +139,7 @@ class SaleController extends Controller
         $customers = Customer::all();
         $products = Product::all();
         $packagingTypes = PackagingType::all();
-        $accounts = Account::where('type','asset')->whereNotIn('id',[2,3,4])->get();
+        $accounts = Account::where('type','asset')->whereNotIn('id',[3,4])->get();
 
         // Return the view with the sale data
         return view('sales.edit', compact('sale', 'customers', 'products', 'packagingTypes','accounts'));

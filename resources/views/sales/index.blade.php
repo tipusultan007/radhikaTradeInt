@@ -2,68 +2,106 @@
 @section('title','Sales')
 @section('create-button')
     <a href="{{ route('sales.create') }}" class="btn btn-primary">Create New Sale</a>
+    <a href="{{ request()->fullUrlWithQuery(['export' => 'excel']) }}" class="btn btn-success">
+        <i class="fas fa-file-excel"></i> Download Excel
+    </a>
+    <a href="{{ request()->fullUrlWithQuery(['export' => 'pdf']) }}" class="btn btn-danger">
+        <i class="fas fa-file-pdf"></i> Download PDF
+    </a>
+
 @endsection
 @section('content')
-    <form method="GET" class="row" action="{{ route('sales.index') }}">
-        <!-- Customer Field -->
-        <div class="form-group col-md-3">
-            <label for="customer_id">Customer:</label>
-            <select name="customer_id" class="form-control select2">
-                <option value="">--Select Customer--</option>
-                @foreach($customers as $customer)
-                    <option value="{{ $customer->id }}" {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
-                        {{ $customer->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+    <div class="card">
+        <div class="card-body">
+            <form method="GET" class="row" action="{{ route('sales.index') }}">
+                <!-- Customer Field -->
+                <div class="form-group col-md-3">
+                    <label for="customer_id">Customer:</label>
+                    <select name="customer_id" class="form-control select2">
+                        <option value="">--Select Customer--</option>
+                        @foreach($customers as $customer)
+                            <option value="{{ $customer->id }}" {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
+                                {{ $customer->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-        <!-- Invoice No Field -->
-        <div class="form-group col-md-2">
-            <label for="invoice_no">Invoice No:</label>
-            <input type="text" name="invoice_no" class="form-control" value="{{ request('invoice_no') }}">
-        </div>
+                <!-- Invoice No Field -->
+                <div class="form-group col-md-2">
+                    <label for="invoice_no">Invoice No:</label>
+                    <input type="text" name="invoice_no" class="form-control" value="{{ request('invoice_no') }}">
+                </div>
 
-        <!-- Start Date Field -->
-        <div class="form-group col-md-2">
-            <label for="start_date">Start Date:</label>
-            <input type="text" name="start_date" class="form-control flatpickr" value="{{ request('start_date') }}">
-        </div>
+                <!-- Start Date Field -->
+                <div class="form-group col-md-2">
+                    <label for="start_date">Start Date:</label>
+                    <input type="text" name="start_date" class="form-control flatpickr" value="{{ request('start_date') }}">
+                </div>
 
-        <!-- End Date Field -->
-        <div class="form-group col-md-2">
-            <label for="end_date">End Date:</label>
-            <input type="text" name="end_date" class="form-control flatpickr" value="{{ request('end_date') }}">
-        </div>
+                <!-- End Date Field -->
+                <div class="form-group col-md-2">
+                    <label for="end_date">End Date:</label>
+                    <input type="text" name="end_date" class="form-control flatpickr" value="{{ request('end_date') }}">
+                </div>
 
-        <div class="form-group col-md-3">
-            <label for="created_by">Created By:</label>
-            <select name="created_by" class="form-control select2">
-                <option value="">--Select User--</option>
-                @foreach($users as $user)
-                    <option value="{{ $user->id }}" {{ request('created_by') == $user->id ? 'selected' : '' }}>
-                        {{ $user->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+                <div class="form-group col-md-3">
+                    <label for="created_by">Created By:</label>
+                    <select name="created_by" class="form-control select2">
+                        <option value="">--Select User--</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" {{ request('created_by') == $user->id ? 'selected' : '' }}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-        <div class="form-group col-md-3">
-            <label for="status">Status:</label>
-            <select name="status" class="form-control select2">
-                <option value="">--Select Status--</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="dispatched" {{ request('status') == 'dispatched' ? 'selected' : '' }}>Dispatched</option>
-                <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Delivered</option>
-            </select>
-        </div>
+                <div class="form-group col-md-3">
+                    <label for="status">Status:</label>
+                    <select name="status" class="form-control select2">
+                        <option value="">--Select Status--</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="dispatched" {{ request('status') == 'dispatched' ? 'selected' : '' }}>Dispatched</option>
+                        <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                    </select>
+                </div>
 
-        <!-- Filter Button -->
-        <div class="form-group col-md-3 align-self-end">
-            <button type="submit" class="btn btn-primary">Search</button>
-            <a class="btn btn-danger" href="{{ route('sales.index') }}">Reset</a>
+                <!-- Filter Button -->
+                <div class="form-group col-md-3 align-self-end">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a class="btn btn-danger" href="{{ route('sales.index') }}">Reset</a>
+                </div>
+            </form>
+            @if(request()->hasAny(['customer_id', 'invoice_no', 'start_date', 'end_date', 'created_by', 'status']))
+                <div class="alert alert-info">
+                    <strong>Search Results For:</strong>
+                    <ul>
+                        @if(request('customer_id'))
+                            <li><strong>Customer:</strong> {{ $customers->find(request('customer_id'))->name }}</li>
+                        @endif
+                        @if(request('invoice_no'))
+                            <li><strong>Invoice No:</strong> {{ request('invoice_no') }}</li>
+                        @endif
+                        @if(request('start_date'))
+                            <li><strong>Start Date:</strong> {{ request('start_date') }}</li>
+                        @endif
+                        @if(request('end_date'))
+                            <li><strong>End Date:</strong> {{ request('end_date') }}</li>
+                        @endif
+                        @if(request('created_by'))
+                            <li><strong>Created By:</strong> {{ $users->find(request('created_by'))->name }}</li>
+                        @endif
+                        @if(request('status'))
+                            <li><strong>Status:</strong> {{ ucfirst(request('status')) }}</li>
+                        @endif
+                    </ul>
+                </div>
+            @endif
+
         </div>
-    </form>
+    </div>
+
 
     <table class="table table-striped table-bordered">
         <thead>
