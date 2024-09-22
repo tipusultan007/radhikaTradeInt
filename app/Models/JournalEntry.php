@@ -27,6 +27,10 @@ class JournalEntry extends Model
         return $this->morphTo();
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
     public function lineItems()
     {
         return $this->hasMany(JournalEntryLineItem::class);
