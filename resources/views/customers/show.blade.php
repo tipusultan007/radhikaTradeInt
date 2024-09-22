@@ -33,6 +33,9 @@
         {{ ucfirst(str_replace('_', ' ', $customer->type)) }}
     </span></td>
                         </tr>
+                        <tr>
+                            <th>Commission</th> <td>{{ $customer->commission }}/=</td>
+                        </tr>
                             <tr>
                             <th>Balance</th> <td>{{ $customer->balance }}/=</td>
                         </tr>
@@ -95,40 +98,56 @@
                 <th>Date</th>
                 <th>Particulars</th>
                 <th class="text-end">Amount</th>
+                <th class="text-end">Balance</th> <!-- New Balance Column -->
                 <th class="text-end">Action</th>
             </tr>
             </thead>
+            @php
+                $runningBalance = $customer->opening_balance; // Starting balance (could be zero or opening balance)
+            @endphp
             @foreach($journalEntries as $entry)
                 @php
                     $isFirstLineItem = true;
                 @endphp
                 @foreach($entry->lineItems()->orderBy('id','desc')->get() as $item)
                     @if($item->account_id === 1 || $item->account_id === 2 || $item->account_id === 6)
-                    <tr>
-                        <td>{{ $entry->date->format('d/m/Y') }}</td>
-                        <td class="{{ $item->credit > 0 ? 'text-end' : '' }}">{{ $item->account->name }} <br>
-                        <small>{{ $entry->description??'' }}</small>
-                        </td>
-                        @if($item->debit > 0)
-                            <td class="text-success text-end">{{ number_format($item->debit, 2)  }}</td>
-                        @else
-                            <td class="text-danger text-end">{{  number_format($item->credit, 2) }}</td>
-                        @endif
-                     <td class="text-end">
-                         @if($entry->type === 'customer_payment')
-                             <button class="btn btn-danger btn-sm">Delete</button>
-                         @endif
-                     </td>
-                    </tr>
+                        <tr>
+                            <td>{{ $entry->date->format('d/m/Y') }}</td>
+                            <td class="{{ $item->credit > 0 ? 'text-end' : '' }}">{{ $item->account->name }}</td>
+
+                            <!-- Amount Column (Debit or Credit) -->
+                            @if($item->debit > 0)
+                                <td class="text-success text-end">{{ number_format($item->debit, 2)  }}</td>
+                                @php
+                                    $runningBalance -= $item->debit; // Increase balance for debit
+                                @endphp
+                            @else
+                                <td class="text-danger text-end">{{ number_format($item->credit, 2) }}</td>
+                                @php
+                                    $runningBalance += $item->credit; // Decrease balance for credit
+                                @endphp
+                            @endif
+
+                            <!-- Balance Column -->
+                            <td class="text-end">{{ number_format($runningBalance, 2) }}</td>
+
+                            <!-- Action Column -->
+                            <td class="text-end">
+                                @if($entry->type === 'customer_payment')
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                @endif
+                            </td>
+                        </tr>
                     @endif
                 @endforeach
             @endforeach
             <tr>
-                <th class="text-end" colspan="2">Balance</th>
-                <th class="text-end">{{ number_format($customer->balance,2) }}</th>
+                <th class="text-end" colspan="3">Total Balance</th>
+                <th class="text-end">{{ number_format($runningBalance, 2) }}</th> <!-- Updated balance at the end -->
                 <td></td>
             </tr>
         </table>
+
     </div>
 
 @endsection
