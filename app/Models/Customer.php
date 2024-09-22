@@ -32,7 +32,12 @@ class Customer extends Model
             ->where('name', 'Sales Commission')
             ->first();
 
-        $specificAccountIds = [1, 2, 6];
+        if ($this->type != 'commission_agent') {
+            $specificAccountIds = [1, 2, 6, 52, 51];
+        }else{
+            $specificAccountIds = [1, 2, 6,52];
+        }
+
         return $this->journalEntries()->with(['lineItems' => function ($query) use ($specificAccountIds) {
             $query->whereIn('account_id', $specificAccountIds);
         }])->get()->reduce(function ($carry, $journalEntry) {

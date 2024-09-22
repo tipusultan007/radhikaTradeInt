@@ -110,7 +110,7 @@
                     $isFirstLineItem = true;
                 @endphp
                 @foreach($entry->lineItems()->orderBy('id','desc')->get() as $item)
-                    @if($item->account_id === 1 || $item->account_id === 2 || $item->account_id === 6)
+                    @if($item->account_id === 1 || $item->account_id === 2 || $item->account_id === 6 || $item->account_id === 52 || $item->account_id === 51)
                         <tr>
                             <td>{{ $entry->date->format('d/m/Y') }}</td>
                             <td class="{{ $item->credit > 0 ? 'text-end' : '' }}">{{ $item->account->name }}</td>
@@ -133,8 +133,10 @@
 
                             <!-- Action Column -->
                             <td class="text-end">
-                                @if($entry->type === 'customer_payment')
-                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                @if($entry->type === 'sale')
+                                    <a href="{{ route('sales.show', $entry->journalable_id) }}" class="btn btn-icon btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
                                 @endif
                             </td>
                         </tr>
