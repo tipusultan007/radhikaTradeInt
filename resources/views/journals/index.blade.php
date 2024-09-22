@@ -11,6 +11,7 @@
                    <th class="text-center">Account</th>
                    <th class="text-center">Debit</th>
                    <th class="text-center">Credit</th>
+                   <th class="text-center">Action</th>
                </tr>
                </thead>
                <tbody>
@@ -31,6 +32,18 @@
                            <td class="{{ $item->credit > 0 ? 'text-end' : '' }}">{{ $item->account->name }}</td>
                            <td class="text-success text-end">{{ $item->debit > 0 ? number_format($item->debit, 2) : '' }}</td>
                            <td class="text-danger text-end">{{ $item->credit > 0 ? number_format($item->credit, 2) : '' }}</td>
+                               @if($loop->first)
+                                   <!-- Conditionally show anchor link based on journal entry type -->
+                                   <td rowspan="{{ $entry->lineItems->count() }}" class="text-center">
+                                       @if($entry->type === 'sale')
+                                           <a href="{{ route('sales.show', ['sale' => $entry->journalable_id]) }}" class="btn btn-success">View Sale</a>
+                                       @elseif($entry->type === 'purchase')
+                                           <a href="{{ route('purchases.show', ['purchase' => $entry->journalable_id]) }}" class="btn btn-warning">View Purchase</a>
+                                       @elseif($entry->type === 'payment')
+                                           <a href="{{ route('payments.show', ['payment' => $entry->journalable_id]) }}" class="btn btn-info">View Payment</a>
+                                       @endif
+                                   </td>
+                               @endif
                        </tr>
                    @endforeach
                @endforeach

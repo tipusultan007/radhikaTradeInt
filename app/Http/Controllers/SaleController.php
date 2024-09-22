@@ -241,7 +241,9 @@ class SaleController extends Controller
                     ->where('packaging_type_id', $item['packaging_type_id'])
                     ->first();
                 if ($warehouse) {
-                    $commission += ($item['price'] * $item['quantity']) - ($warehouse->commission_agent_price * $item['quantity']);
+                    if ($sale->referrer_id != '') {
+                        $commission += ($item['price'] * $item['quantity']) - ($warehouse->commission_agent_price * $item['quantity']);
+                    }
                     $warehouse->stock -= $item['quantity'];
                     if ($warehouse->stock < 0) {
                         throw new \Exception('Insufficient stock for this sale');
@@ -298,7 +300,7 @@ class SaleController extends Controller
         $discountAmount = $sale->discount ?? 0; // If no discount, assume 0
         $dueAmount = $totalAmount - $paidAmount;
 
-        if ($sale->referrer_id != '' && $commission > 0) {
+        if ($sale->referrer_id != '') {
             $commissionAccount = Account::where('name','Sales Commission')->first();
             $salesCommission = SaleCommission::updateOrCreate(
                 [
@@ -351,7 +353,7 @@ class SaleController extends Controller
                 'credit' => $totalAmount - $commission,
             ]);
 
-            if ($sale->referrer_id != '' && $commission > 0){
+            if ($sale->referrer_id != ''){
                 $journalEntry->lineItems()->create([
                     'account_id' => $commissionAccount->id,
                     'debit' => 0,
@@ -382,7 +384,7 @@ class SaleController extends Controller
                 'credit' => $totalAmount - $commission,
             ]);
 
-            if ($sale->referrer_id != '' && $commission > 0){
+            if ($sale->referrer_id != ''){
                 $journalEntry->lineItems()->create([
                     'account_id' => $commissionAccount->id,
                     'debit' => 0,
@@ -406,7 +408,7 @@ class SaleController extends Controller
                 'credit' => $totalAmount - $commission,
             ]);
 
-            if ($sale->referrer_id != '' && $commission > 0){
+            if ($sale->referrer_id != ''){
                 $journalEntry->lineItems()->create([
                     'account_id' => $commissionAccount->id,
                     'debit' => 0,
