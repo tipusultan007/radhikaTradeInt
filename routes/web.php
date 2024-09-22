@@ -97,6 +97,7 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
 
     Route::get('/sale-details/{id}', [SaleController::class, 'details'])->name('sales.details');
 
+    Route::get('cashbook',[\App\Http\Controllers\CashbookController::class,'index'])->name('cashbook.index');
 
 });
 
