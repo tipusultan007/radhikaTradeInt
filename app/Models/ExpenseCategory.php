@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class ExpenseCategory extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = ['parent_id', 'name', 'account_id'];
 
@@ -41,5 +43,14 @@ class ExpenseCategory extends Model
     public function account()
     {
         return $this->belongsTo(Account::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->setDescriptionForEvent(fn(string $eventName) => "Expense category has been {$eventName}")
+            ->logOnlyDirty()
+            ->logAll()
+            ->setDescriptionForEvent(fn(string $eventName) => "Expense category has been {$eventName}");
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Asset;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLineItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AssetController extends Controller
@@ -47,6 +48,7 @@ class AssetController extends Controller
                 'type' => 'asset',
                 'date' => $asset->purchase_date,
                 'description' => 'Purchase of ' . $asset->name,
+                'user_id' => Auth::id(),
             ]);
 
             // Add line item to debit the Asset account

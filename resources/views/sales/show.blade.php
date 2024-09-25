@@ -33,7 +33,6 @@
                             <p class="mb-0">018 9770 1188, 019 9984 8389, 017 3222 6604</p>
                         </div>
                     </div>
-
                 </div>
                 <div class="card-body">
                     <div class="separator-solid"></div>

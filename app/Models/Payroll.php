@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Payroll extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'user_id',
@@ -61,6 +63,13 @@ class Payroll extends Model
 
         $this->net_pay = $salary + $bonus - $deductions - $totalAdvanceSalary;
     }
-
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->setDescriptionForEvent(fn(string $eventName) => "Payroll has been {$eventName}")
+            ->logOnlyDirty()
+            ->logAll()
+            ->setDescriptionForEvent(fn(string $eventName) => "Payroll has been {$eventName}");
+    }
 
 }

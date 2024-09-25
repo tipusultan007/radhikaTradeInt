@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class JournalEntry extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'customer_id',
@@ -15,7 +17,8 @@ class JournalEntry extends Model
         'journalable_id',
         'type',
         'date',
-        'description'
+        'description',
+        'user_id',
     ];
 
     protected $casts = [
@@ -36,4 +39,12 @@ class JournalEntry extends Model
         return $this->hasMany(JournalEntryLineItem::class);
     }
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->setDescriptionForEvent(fn(string $eventName) => "Journal has been {$eventName}")
+            ->logOnlyDirty()
+            ->logAll()
+            ->setDescriptionForEvent(fn(string $eventName) => "Journal has been {$eventName}");
+    }
 }

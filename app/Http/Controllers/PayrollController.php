@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Payroll;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PayrollController extends Controller
@@ -73,6 +74,7 @@ class PayrollController extends Controller
 
             // Create a journal entry
             $journalEntry = JournalEntry::create([
+                'user_id' => Auth::id(),
                 'journalable_type' => Payroll::class,
                 'journalable_id' => $payroll->id,
                 'type' => 'salary',

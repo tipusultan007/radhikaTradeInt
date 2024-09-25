@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Account extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
     protected $fillable = [
         'parent_id',
         'name',
@@ -82,5 +84,13 @@ class Account extends Model
     public function balanceTransfersTo()
     {
         return $this->hasMany(BalanceTransfer::class, 'to_account_id');
+    }
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->setDescriptionForEvent(fn(string $eventName) => "Account has been {$eventName}")
+            ->logOnlyDirty()
+            ->logAll()
+            ->setDescriptionForEvent(fn(string $eventName) => "Account has been {$eventName}");
     }
 }

@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Warehouse;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -347,6 +348,7 @@ class SaleController extends Controller
         } else {
             // Create a new journal entry
             $journalEntry = $sale->journalEntry()->create([
+                'user_id' => Auth::id(),
                 'customer_id' => $sale->customer_id,
                 'type' => 'sale',
                 'date' => $sale->date,

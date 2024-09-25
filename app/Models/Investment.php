@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Investment extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
     protected $fillable = [
         'user_id',
         'account_id',
@@ -34,5 +36,14 @@ class Investment extends Model
     public function account()
     {
         return $this->belongsTo(Account::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->setDescriptionForEvent(fn(string $eventName) => "Investment has been {$eventName}")
+            ->logOnlyDirty()
+            ->logAll()
+            ->setDescriptionForEvent(fn(string $eventName) => "Investment has been {$eventName}");
     }
 }

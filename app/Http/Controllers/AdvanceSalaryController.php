@@ -8,6 +8,7 @@ use App\Models\JournalEntry;
 use App\Models\JournalEntryLineItem;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AdvanceSalaryController extends Controller
@@ -37,7 +38,7 @@ class AdvanceSalaryController extends Controller
             $advanceSalary = new AdvanceSalary([
                 'user_id' => $request->input('user_id'),
                 'amount' => $request->input('amount'),
-                'taken_on' => now(),
+                'taken_on' => $request->taken_on,
                 'month' => $request->input('month'),
                 'account_id' => $request->input('account_id'),
             ]);
@@ -46,10 +47,11 @@ class AdvanceSalaryController extends Controller
 
             // Create a journal entry for the advance salary
             $journalEntry = JournalEntry::create([
+                'user_id' => Auth::id(),
                 'journalable_type' => AdvanceSalary::class,
                 'journalable_id' => $advanceSalary->id,
                 'type' => 'advance_salary',
-                'date' => now(),
+                'date' => $advanceSalary->taken_on,
                 'description' => 'Advance salary taken by ' . $advanceSalary->user->name,
             ]);
 
@@ -167,6 +169,6 @@ class AdvanceSalaryController extends Controller
             return redirect()->back()->with('error', 'Error deleting advance salary: ' . $exception->getMessage());
         }
     }
-    
+
 }
 

@@ -155,6 +155,8 @@
                     </a>
                 </li>
 
+
+
                 <li class="nav-item submenu">
                     <a data-bs-toggle="collapse" href="#Salary">
                         <i class="fas fa-money-check"></i>
@@ -228,6 +230,18 @@
                             </li>
                         </ul>
                     </div>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('activity.logs') }}">
+                        <i class="fas fa-file"></i>
+                        <p>Activity Log</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('product.summary') }}">
+                        <i class="fas fa-chart-area"></i>
+                        <p>Summary Report</p>
+                    </a>
                 </li>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf

@@ -8,6 +8,7 @@ use App\Models\JournalEntryLineItem;
 use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends Controller
@@ -51,6 +52,7 @@ class PurchaseController extends Controller
             $product->save();
 
             $journalEntry = JournalEntry::create([
+                'user_id' => Auth::id(),
                 'customer_id' => null,
                 'journalable_type' => Purchase::class,
                 'journalable_id' => $purchase->id,

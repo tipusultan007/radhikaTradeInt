@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CustomerPayment;
 use App\Models\JournalEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CustomerPaymentController extends Controller
@@ -46,6 +47,7 @@ class CustomerPaymentController extends Controller
                 'type' => 'customer_payment',
                 'date' => $request->date,
                 'description' => 'Customer Payment',
+                'user_id' => Auth::id(),
             ]);
             $journalEntry->lineItems()->create([
                 'account_id' => $request->account_id,

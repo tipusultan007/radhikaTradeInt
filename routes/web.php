@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AdvanceSalaryController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\BalanceSheetController;
@@ -35,7 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index']);
     Route::get('/', [HomeController::class, 'index']);
 });
-Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('accounts', AccountController::class);
     Route::resource('customers', CustomerController::class);
     Route::resource('products', ProductController::class);
@@ -99,5 +100,8 @@ Route::middleware(['auth','activity'])->prefix('admin')->group(function () {
 
     Route::get('cashbook',[\App\Http\Controllers\CashbookController::class,'index'])->name('cashbook.index');
 
+    Route::get('product-summary', [\App\Http\Controllers\ReportController::class, 'productSummary'])->name('product.summary');
+    Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity.logs');
+    Route::get('/activity-log/{id}', [ActivityLogController::class, 'show'])->name('activity.log.details');
 });
 

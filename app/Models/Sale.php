@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Sale extends Model
 {
     use HasFactory;
+    use LogsActivity;
 
     protected $fillable = [
         'customer_id',
@@ -84,5 +87,14 @@ class Sale extends Model
     public static function deliveredSale()
     {
         return Sale::where('status','delivered')->count();
+    }
+    // Only log the changed (dirty) attributes
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->setDescriptionForEvent(fn(string $eventName) => "Sale has been {$eventName}")
+            ->logOnlyDirty()
+            ->logAll()
+            ->setDescriptionForEvent(fn(string $eventName) => "Sale has been {$eventName}");
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Investment;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLineItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class InvestmentController extends Controller
 {
@@ -52,6 +53,7 @@ class InvestmentController extends Controller
             'type' => 'investment',
             'date' => $request->date,
             'description' => $request->description ?: 'Investment',
+            'user_id' => Auth::id(),
         ]);
 
         // Add the debit and credit journal entry line items

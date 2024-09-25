@@ -7,6 +7,7 @@ use App\Models\ExpenseCategory;
 use App\Models\Account;
 use App\Models\JournalEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ExpenseController extends Controller
@@ -57,6 +58,7 @@ class ExpenseController extends Controller
                 'description' => $request->description,
                 'type' => 'expense',
                 'date' => $request->date,
+                'user_id' => Auth::id(),
             ]);
             $expense->journalEntry()->save($journalEntry);
 
